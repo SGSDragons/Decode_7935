@@ -15,7 +15,6 @@ public class DriveSubsystem {
 
     int tickstoinches = 100;
     int tickstodegrees = 100;
-    int sdfsdfa;
 
     DriveSubsystem(HardwareMap hardwareMap){
         frontleftmotor = hardwareMap.get(DcMotor.class, "frontleft");
