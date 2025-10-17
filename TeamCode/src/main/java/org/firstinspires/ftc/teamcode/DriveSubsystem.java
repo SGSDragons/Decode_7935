@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 //import android.util.Range;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.Range;
@@ -40,7 +41,7 @@ public class DriveSubsystem {
         imu = hardwareMap.get(IMU.class,"imu");
 
         frontleftmotor.setDirection(DcMotor.Direction.REVERSE);
-        frontrightmotor.setDirection(DcMotor.Direction.REVERSE);
+        frontrightmotor.setDirection(DcMotor.Direction.FORWARD);
         backleftmotor.setDirection(DcMotor.Direction.FORWARD);
         backrightmotor.setDirection(DcMotor.Direction.FORWARD);
         imu.resetYaw();
