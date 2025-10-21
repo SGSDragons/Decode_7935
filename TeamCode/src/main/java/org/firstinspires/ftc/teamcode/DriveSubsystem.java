@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 //import android.util.Range;
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -15,13 +16,18 @@ public class DriveSubsystem {
     int ticksperrotation = 28;
     double circumfrence = 3.1416*3;
     int gearratio = 3;
-    double ticksperinch = circumfrence / (ticksperrotation*gearratio);
+    double ticksperinch = (ticksperrotation*gearratio) / circumfrence;
 
-    double driveGain = 0.1;
-    double turnGain = 0.1;
+    double driveGain = 0.001;
+    double turnGain = -0.001;
     double minDrivePower = 0.2;
     double minStrafePower = 0.3;
     double minTurnPower = 0.3;
+
+    double error = 0;
+    double Turnpower = 0;
+    double Drivepower = 0;
+    double Strafepower = 0;
 
     DcMotor frontleftmotor;
     DcMotor frontrightmotor;
@@ -45,7 +51,12 @@ public class DriveSubsystem {
         frontrightmotor.setDirection(DcMotor.Direction.FORWARD);
         backleftmotor.setDirection(DcMotor.Direction.FORWARD);
         backrightmotor.setDirection(DcMotor.Direction.FORWARD);
+
         imu.resetYaw();
+        imu.initialize(
+                new IMU.Parameters(new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+                        RevHubOrientationOnRobot.UsbFacingDirection.FORWARD))
+        );
     }
 
 //    public void translate(int drive, int strafe) {
@@ -116,17 +127,21 @@ public class DriveSubsystem {
         int strafeError = strafetarget - currentstrafe;
         double distance = Math.sqrt(driveError*driveError + strafeError*strafeError);
 
-        double drivepower = Range.clip(driveError * driveGain, -1.0, 1.0) * (driveError/distance);
-        double strafepower = Range.clip(strafeError * driveGain, -1.0, 1.0) * (strafeError/distance);
+        double drivepower = Range.clip(driveError * driveGain, -1.0, 1.0) * Math.abs(driveError/distance);
+        double strafepower = Range.clip(strafeError * driveGain, -1.0, 1.0) * Math.abs(strafeError/distance);
 
-        double adjust = minDrivePower / drivepower;
+        double adjust = minDrivePower / Math.abs(drivepower);
         if (adjust > 1.0) {
             drivepower *= adjust;
         }
-        adjust = minStrafePower / strafepower;
+        adjust = minStrafePower / Math.abs(strafepower);
         if (adjust > 1.0) {
             strafepower *= adjust;
         }
+
+        error = driveError;
+        Drivepower = drivepower;
+        Strafepower = strafepower;
 
         if (Math.abs(driveError) <= 3) drivepower = 0;
         if (Math.abs(strafeError) <= 3) strafepower = 0;
@@ -136,13 +151,20 @@ public class DriveSubsystem {
 
     public void gotoHeading() {
         double currentheading = getHeading();
-        double error = targetheading - currentheading;
-
-        double turnpower = error * turnGain;
-        double adjust = minTurnPower / turnpower;
-        if (adjust > 1.0) {
-            turnpower *= adjust;
+        double turnerror = targetheading - currentheading;
+        if (Math.abs(turnerror) > 180) {
+            double sign = -turnerror/Math.abs(turnerror);
+            turnerror = sign * (360 - Math.abs(turnerror));
         }
+
+        double turnpower = turnerror * turnGain;
+//        double adjust = minTurnPower / Math.abs(turnpower);
+//        if (adjust > 1.0) {
+//            turnpower *= adjust;
+//        }
+
+        error = turnerror;
+        Turnpower = turnpower;
 
         setMotion(0,0,turnpower);
     }
@@ -162,6 +184,11 @@ public class DriveSubsystem {
         double backLeftPower = Range.clip(drive - strafe + turn, -1.0, 1.0);
         double backRightPower = Range.clip(drive + strafe - turn, -1.0, 1.0);
 
+//        double frontLeftPower = Range.clip(drive + strafe + turn, -0.2, 0.2);
+//        double frontRightPower = Range.clip(drive - strafe - turn, -0.2, 0.2);
+//        double backLeftPower = Range.clip(drive - strafe + turn, -0.2, 0.2);
+//        double backRightPower = Range.clip(drive + strafe - turn, -0.2, 0.2);
+
         frontleftmotor.setPower(frontLeftPower);
         frontrightmotor.setPower(frontRightPower);
         backleftmotor.setPower(backLeftPower);
@@ -175,11 +202,6 @@ public class DriveSubsystem {
     public boolean reachedHeading() {
         return (Math.abs(targetheading - getHeading()) <= 2);
     }
-
-//    public double turnCorrection(double targetheading) {
-//        double currentheading = getHeading();
-//        return (targetheading - currentheading) * turnGain;
-//    }
 
     public int getDrivePositions() {
         int sum = frontleftmotor.getCurrentPosition() +

@@ -47,6 +47,10 @@ public class ShooterSubsystem {
         lastpos = position;
     }
 
+    public void runShooter(double power) {
+        flywheel.setPower(power);
+    }
+
     public void disableShooter () {
         // Turn off motors...
         flywheel.setPower(0);

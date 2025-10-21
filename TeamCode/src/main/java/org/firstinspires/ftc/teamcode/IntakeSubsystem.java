@@ -35,7 +35,7 @@ public class IntakeSubsystem {
     }
 
     public void setPower(double intakepower, double indexpower){
-        intakemotor.setPower(intakepower);
+        intakemotor.setPower(-intakepower);
         indexmotor.setPower(indexpower);
     }
 }
