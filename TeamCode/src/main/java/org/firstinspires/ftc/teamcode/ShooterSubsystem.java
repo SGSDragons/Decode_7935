@@ -35,7 +35,7 @@ public class ShooterSubsystem {
 
         speed = (difference * 1) / (timedifference / 1000000);
 
-        flywheel.setPower(1.0);
+        flywheel.setPower(-1.0);
 
         if (speed > speed_needed) {
             valve.setPosition(0);
