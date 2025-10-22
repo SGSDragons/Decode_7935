@@ -40,7 +40,7 @@ public class ShooterTest extends LinearOpMode {
 
     private ShooterSubsystem shooter;
 
-
+@ disabled
     @Override
     public void runOpMode() {
 

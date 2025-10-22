@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 @TeleOp(name="Teleop", group="Linear OpMode")
-public class Teleop extends LinearOpMode{
+public class  Teleop extends LinearOpMode{
 
     DriveSubsystem driveSubsystem;
     IntakeSubsystem intakeSubsystem;
