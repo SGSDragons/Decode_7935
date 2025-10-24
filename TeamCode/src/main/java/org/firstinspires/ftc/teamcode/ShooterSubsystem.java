@@ -1,59 +1,105 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
+@Config
 public class ShooterSubsystem {
 
     // Motors
-    DcMotor flywheel;
+    DcMotorEx flywheel;
+    DcMotorEx mover;
+    DcMotorEx intake;
 
     // Servos
-    Servo valve;
+
 
     public ShooterSubsystem(HardwareMap hardwareMap) {
         // Assign motors from hardware map
-        flywheel = hardwareMap.get(DcMotor.class, "flywheel");
+        flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
+        mover = hardwareMap.get(DcMotorEx.class, "mover");
+        intake = hardwareMap.get(DcMotorEx.class, "intake");
     }
 
-    int lastpos;
-    int position;
     double speed;
-    double speed_needed = 10;
+    int lastpos;
     double lasttime;
+    public static int setback;
+    public static int setforward;
+
+    public static int tolerance;
+    public static double speed_needed;
+    public static double speed_needed2;
+    public static double speed_needed3;
+    public double targetflywheelspeed = speed_needed2;
+
+     Integer moverismoved;
+
 
     // remember to activate last time and pos.
 
+    public void setTargetSpeed(int selection) {
+        switch(selection) {
+            case 1: targetflywheelspeed = speed_needed; break;
+            case 2: targetflywheelspeed = speed_needed2; break;
+            case 3: targetflywheelspeed = speed_needed3; break;
+            default: break;
+        }
+    }
     public void enableShooter() {
+
         // Rev up motors.... wait for state, etc.
         int position = flywheel.getCurrentPosition();
         double time = System.nanoTime();
 
         double difference = position - lastpos;
         double timedifference = time - lasttime;
-
         speed = (difference * 1) / (timedifference / 1000000);
 
-        flywheel.setPower(-1.0);
+        if (moverismoved == null) {
+            moverismoved = mover.getCurrentPosition() - setback;
+            mover.setTargetPosition(moverismoved);
+        }
 
-        if (speed > speed_needed) {
-            valve.setPosition(0);
+        if (Math.abs(mover.getCurrentPosition() - moverismoved) < tolerance) {
+            flywheel.setVelocity(targetflywheelspeed);
         } else {
-            valve.setPosition(1);
+            flywheel.setPower(0);
+        }
+
+
+
+        if (speed > targetflywheelspeed) {
+            mover.setTargetPosition(mover.getCurrentPosition() + setforward);
+        } else {
         }
 
         lasttime = time;
         lastpos = position;
-    }
 
-    public void runShooter(double power) {
-        flywheel.setPower(power);
+        updateTelemetry();
     }
 
     public void disableShooter () {
         // Turn off motors...
         flywheel.setPower(0);
+        mover.setPower(1);
+        updateTelemetry();
+        moverismoved = null;
+    }
+
+    public void updateTelemetry() {
+        TelemetryPacket telemetry = new TelemetryPacket();
+        telemetry.put("flywheel.speed", speed);
+        telemetry.put("setback", setback);
+        telemetry.put("targt_speed" , targetflywheelspeed);
+        telemetry.put("setforward", setforward);
+    }
+
+    public void intake () {
+        intake.setPower(1);
 
     }
 }

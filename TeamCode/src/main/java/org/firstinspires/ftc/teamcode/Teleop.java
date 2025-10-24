@@ -31,16 +31,16 @@ public class  Teleop extends LinearOpMode{
 
             double intakepower = gamepad2.left_stick_y;
             double shooterpower = gamepad2.left_trigger;
-            shooterSubsystem.runShooter(shooterpower);
+//            shooterSubsystem.runShooter(shooterpower);
 
             driveSubsystem.setMotion(drive, strafe, turn);
             intakeSubsystem.setPower(intakepower, intakepower);
 
             if (Math.abs(shooterpower) < 0.1 && Math.abs(intakepower) > 0.1) {
-                shooterSubsystem.runShooter(-0.4);
+//                shooterSubsystem.runShooter(-0.4);
             }
             else {
-                shooterSubsystem.runShooter(shooterpower);
+//                shooterSubsystem.runShooter(shooterpower);
             }
         }
     }

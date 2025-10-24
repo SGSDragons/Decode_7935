@@ -40,7 +40,8 @@ public class ShooterTest extends LinearOpMode {
 
     private ShooterSubsystem shooter;
 
-@ disabled
+    boolean ispressed;
+
     @Override
     public void runOpMode() {
 
@@ -50,11 +51,28 @@ public class ShooterTest extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            if (gamepad2.x) {
+            if (gamepad2.right_trigger >0.25) {
                 shooter.enableShooter();
             }
             else {
                 shooter.disableShooter();
             }
+            if (gamepad2.left_trigger > 0.25) {
+                shooter.intake();
+            }
+            if(gamepad2.dpad_down) {
+                shooter.setTargetSpeed(1);
+            }
+            else if (gamepad2.dpad_up) {
+                shooter.setTargetSpeed(3);
+            }
+            else {
+                shooter.setTargetSpeed(2);
+            }
+            if (gamepad2.right_trigger > 25) {
+                ispressed = true;
+                shooter.move();
+            }
+
         }
     }}
