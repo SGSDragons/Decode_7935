@@ -18,18 +18,20 @@ public class AutoTest extends LinearOpMode {
         waitForStart();
 
         driveSubsystem = new DriveSubsystem(hardwareMap);
-        driveSubsystem.setTargetPosition(30,30);
-        driveSubsystem.setTargetHeading(-44);
+        driveSubsystem.setTargetPosition(50,20);
+        driveSubsystem.setTargetHeading(driveSubsystem.getHeading());
 
         while (!driveSubsystem.reachedPosition()) {
-            driveSubsystem.gotoPosition();
-            driveSubsystem.gotoHeading();
+            double[] translate = driveSubsystem.gotoPosition();
+            double turn = driveSubsystem.gotoHeading();
+            driveSubsystem.setMotion(translate[0],translate[1],turn);
+
             telemetry.addData("Current heading", driveSubsystem.getHeading());
             telemetry.addData("Target heading", driveSubsystem.targetheading);
-            telemetry.addData("Error", driveSubsystem.error);
-            telemetry.addData("Drive Power", driveSubsystem.Drivepower);
-            telemetry.addData("Strafe Power", driveSubsystem.Strafepower);
-            telemetry.addData("Turn Power", driveSubsystem.Turnpower);
+            telemetry.addData("Drive Power", translate[0]);
+            telemetry.addData("Strafe Power", translate[1]);
+            telemetry.addData("Turn Power", turn);
+//            telemetry.addData("Error", driveSubsystem.error);
             telemetry.update();
         }
     }

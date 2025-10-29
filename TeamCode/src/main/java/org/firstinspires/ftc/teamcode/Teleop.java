@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -13,6 +14,7 @@ public class  Teleop extends LinearOpMode{
     DriveSubsystem driveSubsystem;
     IntakeSubsystem intakeSubsystem;
     ShooterSubsystem shooterSubsystem;
+    DcMotor shooter;
 
     @Override
     public void runOpMode(){
@@ -20,6 +22,8 @@ public class  Teleop extends LinearOpMode{
         driveSubsystem = new DriveSubsystem(hardwareMap);
         intakeSubsystem = new IntakeSubsystem(hardwareMap);
         shooterSubsystem = new ShooterSubsystem(hardwareMap);
+
+        shooter = hardwareMap.get(DcMotor.class,"flywheel");
 
         waitForStart();
 
@@ -31,17 +35,22 @@ public class  Teleop extends LinearOpMode{
 
             double intakepower = gamepad2.left_stick_y;
             double shooterpower = gamepad2.left_trigger;
-//            shooterSubsystem.runShooter(shooterpower);
+            shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            shooter.setPower(shooterpower);
+
+            telemetry.addData("Shooter Power", shooter.getPower());
+            telemetry.update();
 
             driveSubsystem.setMotion(drive, strafe, turn);
             intakeSubsystem.setPower(intakepower, intakepower);
 
-            if (Math.abs(shooterpower) < 0.1 && Math.abs(intakepower) > 0.1) {
+//            if (Math.abs(shooterpower) < 0.1 && Math.abs(intakepower) > 0.1) {
 //                shooterSubsystem.runShooter(-0.4);
-            }
-            else {
+//            }
+//            else {
 //                shooterSubsystem.runShooter(shooterpower);
-            }
+//            }
+            telemetry.update();
         }
     }
 }

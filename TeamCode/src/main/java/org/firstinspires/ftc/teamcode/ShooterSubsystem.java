@@ -2,7 +2,9 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 @Config
@@ -19,8 +21,10 @@ public class ShooterSubsystem {
     public ShooterSubsystem(HardwareMap hardwareMap) {
         // Assign motors from hardware map
         flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
-        mover = hardwareMap.get(DcMotorEx.class, "mover");
+        mover = hardwareMap.get(DcMotorEx.class, "indexer");
         intake = hardwareMap.get(DcMotorEx.class, "intake");
+
+        flywheel.setDirection(DcMotor.Direction.REVERSE);
     }
 
     double speed;
@@ -98,9 +102,12 @@ public class ShooterSubsystem {
         telemetry.put("setforward", setforward);
     }
 
-    public void intake () {
+    public void intake() {
         intake.setPower(1);
+    }
 
+    public void runShooter(double power) {
+        flywheel.setPower(power);
     }
 }
 

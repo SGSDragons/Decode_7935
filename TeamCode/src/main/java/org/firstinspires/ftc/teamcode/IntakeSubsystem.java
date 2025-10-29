@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class IntakeSubsystem {
@@ -14,6 +15,9 @@ public class IntakeSubsystem {
     public IntakeSubsystem(HardwareMap hardwareMap){
         intakemotor = hardwareMap.get(DcMotor.class,"intake");
         indexmotor = hardwareMap.get(DcMotor.class,"indexer");
+
+        intakemotor.setDirection(DcMotor.Direction.REVERSE);
+        indexmotor.setDirection(DcMotor.Direction.FORWARD);
     }
 
     public void moveIntake(int distance){

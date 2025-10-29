@@ -71,7 +71,7 @@ public class ShooterTest extends LinearOpMode {
             }
             if (gamepad2.right_trigger > 25) {
                 ispressed = true;
-                shooter.move();
+//                shooter.move();
             }
 
         }
