@@ -18,6 +18,8 @@ public class AutoTest extends LinearOpMode {
         waitForStart();
 
         driveSubsystem = new DriveSubsystem(hardwareMap);
+        driveSubsystem.resetYaw();
+
         driveSubsystem.setTargetPosition(50,20);
         driveSubsystem.setTargetHeading(driveSubsystem.getHeading());
 

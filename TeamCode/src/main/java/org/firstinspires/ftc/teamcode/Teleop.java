@@ -23,8 +23,8 @@ public class  Teleop extends LinearOpMode{
         intakeSubsystem = new IntakeSubsystem(hardwareMap);
         shooterSubsystem = new ShooterSubsystem(hardwareMap);
 
-        shooter = hardwareMap.get(DcMotor.class,"flywheel");
-
+        driveSubsystem.setTargetHeading(0);
+        driveSubsystem.resetYaw();
         waitForStart();
 
         while (opModeIsActive()){
@@ -33,23 +33,24 @@ public class  Teleop extends LinearOpMode{
             double strafe = gamepad1.left_stick_x;
             double turn = gamepad1.right_stick_x;
 
+            if (gamepad1.right_bumper && !driveSubsystem.reachedHeading()) {
+                driveSubsystem.setTargetHeading(-45);
+                turn = driveSubsystem.gotoHeading();
+            }
+
             double intakepower = gamepad2.left_stick_y;
             double shooterpower = gamepad2.left_trigger;
-            shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            shooter.setPower(shooterpower);
-
-            telemetry.addData("Shooter Power", shooter.getPower());
-            telemetry.update();
+            if (gamepad2.left_bumper) {
+                shooterSubsystem.enableShooter();
+            }
 
             driveSubsystem.setMotion(drive, strafe, turn);
+//            driveSubsystem.feildOriented(drive,strafe,turn);
             intakeSubsystem.setPower(intakepower, intakepower);
+            shooterSubsystem.runShooter(shooterpower);
 
-//            if (Math.abs(shooterpower) < 0.1 && Math.abs(intakepower) > 0.1) {
-//                shooterSubsystem.runShooter(-0.4);
-//            }
-//            else {
-//                shooterSubsystem.runShooter(shooterpower);
-//            }
+
+            telemetry.addData("Heading", driveSubsystem.getHeading());
             telemetry.update();
         }
     }

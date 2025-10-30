@@ -20,7 +20,7 @@ public class DriveSubsystem {
     double ticksperinch = (ticksperrotation*gearratio) / circumfrence;
 
     double driveGain = 0.001;
-    double turnGain = -0.001;
+    double turnGain = -0.01;
     double minDrivePower = 0.2;
     double minStrafePower = 0.3;
     double minTurnPower = 0.3;
@@ -140,6 +140,14 @@ public class DriveSubsystem {
         double currentheading = getHeading() * Math.PI / 180;
         double drivepower = drive * Math.cos(-currentheading) - strafe * Math.sin(-currentheading);
         double strafepower = drive * Math.sin(-currentheading) + strafe * Math.cos(-currentheading);
+
+        if (Math.abs(turn) > 0.1) {
+            setTargetHeading(getHeading()+-turn*40);
+        }
+
+        double turnpower = reachedHeading() ? 0 : gotoHeading();
+
+        setMotion(-drivepower,-strafepower,turnpower);
     }
 
     public boolean reachedPosition() {
@@ -168,6 +176,10 @@ public class DriveSubsystem {
 
     public double getHeading() {
         return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+    }
+
+    public void resetYaw(){
+        imu.resetYaw();
     }
 }
 
