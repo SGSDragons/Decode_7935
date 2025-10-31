@@ -39,10 +39,7 @@ public class  Teleop extends LinearOpMode{
             }
 
             double intakepower = gamepad2.left_stick_y;
-            double shooterpower = gamepad2.left_trigger;
-            if (gamepad2.left_bumper) {
-                shooterSubsystem.enableShooter();
-            }
+            double shooterpower = gamepad2.right_stick_y;
 
             driveSubsystem.setMotion(drive, strafe, turn);
 //            driveSubsystem.feildOriented(drive,strafe,turn);
