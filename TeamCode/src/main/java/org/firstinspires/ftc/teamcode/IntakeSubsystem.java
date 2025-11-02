@@ -16,7 +16,7 @@ public class IntakeSubsystem {
         intakemotor = hardwareMap.get(DcMotor.class,"intake");
         indexmotor = hardwareMap.get(DcMotor.class,"indexer");
 
-        intakemotor.setDirection(DcMotor.Direction.REVERSE);
+        intakemotor.setDirection(DcMotor.Direction.FORWARD);
         indexmotor.setDirection(DcMotor.Direction.FORWARD);
     }
 

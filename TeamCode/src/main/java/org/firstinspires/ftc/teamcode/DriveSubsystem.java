@@ -23,7 +23,7 @@ public class DriveSubsystem {
     double turnGain = -0.01;
     double minDrivePower = 0.2;
     double minStrafePower = 0.3;
-    double minTurnPower = 0.3;
+    double minTurnPower = 0.2;
 
     DcMotor frontleftmotor;
     DcMotor frontrightmotor;
@@ -60,10 +60,17 @@ public class DriveSubsystem {
         int currentstrafe = getStrafePositions();
         int driveError = drivetarget - currentdrive;
         int strafeError = strafetarget - currentstrafe;
-        double distance = Math.sqrt(driveError*driveError + strafeError*strafeError);
 
-        double drivepower = Range.clip(driveError * driveGain, -1.0, 1.0) * Math.abs(driveError/distance);
-        double strafepower = Range.clip(strafeError * driveGain, -1.0, 1.0) * Math.abs(strafeError/distance);
+
+        double drivepower;
+        double strafepower;
+        if (driveError >= strafeError) {
+            drivepower = Range.clip(driveError * driveGain, -1.0, 1.0);
+            strafepower = Range.clip(strafeError * driveGain, -1.0, 1.0) * Math.abs(strafeError/driveError);
+        } else {
+            drivepower = Range.clip(driveError * driveGain, -1.0, 1.0) * Math.abs(driveError/strafeError);
+            strafepower = Range.clip(strafeError * driveGain, -1.0, 1.0);
+        }
 
         double adjust = minDrivePower / Math.abs(drivepower);
         if (adjust > 1.0) {
@@ -77,7 +84,6 @@ public class DriveSubsystem {
         if (Math.abs(driveError) <= 3) drivepower = 0;
         if (Math.abs(strafeError) <= 3) strafepower = 0;
 
-//        setMotion(drivepower,strafepower,0);
         return new double[] {drivepower, strafepower};
     }
 
@@ -94,8 +100,8 @@ public class DriveSubsystem {
         if (adjust > 1.0) {
             turnpower *= adjust;
         }
+        if (Math.abs(turnerror) <= 2) turnpower = 0;
 
-//        setMotion(0,0,turnpower);
         return turnpower;
     }
 
@@ -136,6 +142,10 @@ public class DriveSubsystem {
         backrightmotor.setPower(backRightPower);
     }
 
+    public void stop() {
+        setMotion(0,0,0);
+    }
+
     public void feildOriented(double drive, double strafe, double turn){
         double currentheading = getHeading() * Math.PI / 180;
         double drivepower = drive * Math.cos(-currentheading) - strafe * Math.sin(-currentheading);
@@ -151,7 +161,9 @@ public class DriveSubsystem {
     }
 
     public boolean reachedPosition() {
-        return (Math.abs(drivetarget - getDrivePositions()) <= 3);
+        boolean drive =  (Math.abs(drivetarget - getDrivePositions()) <= 3);
+        boolean strafe =  (Math.abs(strafetarget - getStrafePositions()) <= 3);
+        return (drive && strafe);
     }
 
     public boolean reachedHeading() {

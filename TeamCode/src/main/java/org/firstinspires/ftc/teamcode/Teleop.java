@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @TeleOp(name="Teleop", group="Linear OpMode")
 public class  Teleop extends LinearOpMode{
 
+    ElapsedTime runtime = new ElapsedTime();
     DriveSubsystem driveSubsystem;
     IntakeSubsystem intakeSubsystem;
     ShooterSubsystem shooterSubsystem;
@@ -25,7 +26,9 @@ public class  Teleop extends LinearOpMode{
 
         driveSubsystem.setTargetHeading(0);
         driveSubsystem.resetYaw();
+
         waitForStart();
+        runtime.reset();
 
         while (opModeIsActive()){
 
@@ -37,15 +40,36 @@ public class  Teleop extends LinearOpMode{
                 driveSubsystem.setTargetHeading(-45);
                 turn = driveSubsystem.gotoHeading();
             }
-
-            double intakepower = gamepad2.left_stick_y;
-            double shooterpower = gamepad2.right_stick_y;
+            if (gamepad1.left_bumper && !driveSubsystem.reachedHeading()) {
+                driveSubsystem.setTargetHeading(45);
+                turn = driveSubsystem.gotoHeading();
+            }
+            if (gamepad1.a) {
+                driveSubsystem.resetYaw();
+            }
 
             driveSubsystem.setMotion(drive, strafe, turn);
-//            driveSubsystem.feildOriented(drive,strafe,turn);
-            intakeSubsystem.setPower(intakepower, intakepower);
-            shooterSubsystem.runShooter(shooterpower);
 
+            if (gamepad2.a) {
+                shooterSubsystem.setTargetSpeed(1);
+                shooterSubsystem.enableShooter();
+            } else if (gamepad2.x) {
+                shooterSubsystem.setTargetSpeed(2);
+                shooterSubsystem.enableShooter();
+            }  else if (gamepad2.y) {
+                shooterSubsystem.setTargetSpeed(3);
+                shooterSubsystem.enableShooter();
+            } else {
+                double shooterpower = -gamepad2.right_stick_y;
+                shooterSubsystem.runShooter(shooterpower);
+            }
+
+            double intakepower = gamepad2.left_stick_y;
+            if (gamepad2.right_bumper){
+                intakeSubsystem.setPower(0, intakepower);
+            } else{
+                intakeSubsystem.setPower(intakepower, intakepower);
+            }
 
             telemetry.addData("Heading", driveSubsystem.getHeading());
             telemetry.update();

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -30,13 +31,14 @@ public class ShooterSubsystem {
     double speed;
     int lastpos;
     double lasttime;
-    public static int setback;
+    public static int setback = 0;
     public static int setforward;
+    public static int feedSpeed = 700;
 
-    public static int tolerance;
-    public static double speed_needed;
-    public static double speed_needed2;
-    public static double speed_needed3;
+    public static int tolerance = 100;
+    public static double speed_needed1 = 1600;
+    public static double speed_needed2 = 1800;
+    public static double speed_needed3 = 2100;
     public double targetflywheelspeed = speed_needed2;
 
      Integer moverismoved;
@@ -46,7 +48,7 @@ public class ShooterSubsystem {
 
     public void setTargetSpeed(int selection) {
         switch(selection) {
-            case 1: targetflywheelspeed = speed_needed; break;
+            case 1: targetflywheelspeed = speed_needed1; break;
             case 2: targetflywheelspeed = speed_needed2; break;
             case 3: targetflywheelspeed = speed_needed3; break;
             default: break;
@@ -66,18 +68,16 @@ public class ShooterSubsystem {
             moverismoved = mover.getCurrentPosition() - setback;
             mover.setTargetPosition(moverismoved);
         }
+//
+//        if (Math.abs(mover.getCurrentPosition() - moverismoved) < tolerance) {
+//            flywheel.setVelocity(targetflywheelspeed);
+//        } else {
+//            flywheel.setPower(0);
+//        }
 
-        if (Math.abs(mover.getCurrentPosition() - moverismoved) < tolerance) {
-            flywheel.setVelocity(targetflywheelspeed);
-        } else {
-            flywheel.setPower(0);
-        }
-
-
-
-        if (speed > targetflywheelspeed) {
-            mover.setTargetPosition(mover.getCurrentPosition() + setforward);
-        } else {
+        flywheel.setVelocity(targetflywheelspeed);
+        if (Math.abs(flywheel.getVelocity() - targetflywheelspeed) < 100) {
+            mover.setVelocity(-feedSpeed);
         }
 
         lasttime = time;
@@ -88,18 +88,19 @@ public class ShooterSubsystem {
 
     public void disableShooter () {
         // Turn off motors...
-        flywheel.setPower(0);
-        mover.setPower(1);
+//        flywheel.setPower(0);
+//        mover.setPower(1);
         updateTelemetry();
         moverismoved = null;
     }
 
     public void updateTelemetry() {
         TelemetryPacket telemetry = new TelemetryPacket();
-        telemetry.put("flywheel.speed", speed);
+        telemetry.put("flywheel.speed", flywheel.getVelocity());
         telemetry.put("setback", setback);
-        telemetry.put("targt_speed" , targetflywheelspeed);
+        telemetry.put("target.speed" , targetflywheelspeed);
         telemetry.put("setforward", setforward);
+        FtcDashboard.getInstance().sendTelemetryPacket(telemetry);
     }
 
     public void intake() {
