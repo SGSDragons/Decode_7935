@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
 //import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name = "AutoTest")
+@Config
 //@Config
 public class AutoTest extends LinearOpMode {
 
@@ -14,7 +16,8 @@ public class AutoTest extends LinearOpMode {
     IntakeSubsystem intakeSubsystem;
     ShooterSubsystem shooterSubsystem;
 
-    public static int drive1 = -40;
+    public static int drive1 = 0;
+    public static int strafe1 = -40;
 
     @Override
     public void runOpMode() {
@@ -32,7 +35,7 @@ public class AutoTest extends LinearOpMode {
     }
 
     public void drive1(){
-        driveSubsystem.setTargetPosition(0,drive1);
+        driveSubsystem.setTargetPosition(drive1,strafe1);
         driveSubsystem.setTargetHeading(driveSubsystem.getHeading());
 
         while (!driveSubsystem.reachedPosition() || !driveSubsystem.reachedHeading()) {

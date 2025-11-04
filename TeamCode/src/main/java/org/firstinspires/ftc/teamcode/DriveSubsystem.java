@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode;
 
 //import android.util.Range;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -12,6 +15,7 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 
+@Config
 public class DriveSubsystem {
 
     int ticksperrotation = 28;
@@ -19,11 +23,12 @@ public class DriveSubsystem {
     int gearratio = 3;
     double ticksperinch = (ticksperrotation*gearratio) / circumfrence;
 
-    double driveGain = 0.001;
-    double turnGain = -0.01;
-    double minDrivePower = 0.2;
-    double minStrafePower = 0.3;
-    double minTurnPower = 0.2;
+    public static double turnsensitivity = 60;
+    public static double driveGain = 0.001;
+    public static double turnGain = -0.01;
+    public static double minDrivePower = 0.2;
+    public static double minStrafePower = 0.7;
+    public static double minTurnPower = 0.35;
 
     DcMotor frontleftmotor;
     DcMotor frontrightmotor;
@@ -48,6 +53,11 @@ public class DriveSubsystem {
         backleftmotor.setDirection(DcMotor.Direction.FORWARD);
         backrightmotor.setDirection(DcMotor.Direction.REVERSE);
 
+        frontleftmotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontrightmotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backleftmotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backrightmotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         imu.resetYaw();
         imu.initialize(
                 new IMU.Parameters(new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
@@ -60,17 +70,19 @@ public class DriveSubsystem {
         int currentstrafe = getStrafePositions();
         int driveError = drivetarget - currentdrive;
         int strafeError = strafetarget - currentstrafe;
+        double distance = Math.sqrt(driveError*driveError + strafeError*strafeError);
 
-
-        double drivepower;
-        double strafepower;
-        if (driveError >= strafeError) {
-            drivepower = Range.clip(driveError * driveGain, -1.0, 1.0);
-            strafepower = Range.clip(strafeError * driveGain, -1.0, 1.0) * Math.abs(strafeError/driveError);
-        } else {
-            drivepower = Range.clip(driveError * driveGain, -1.0, 1.0) * Math.abs(driveError/strafeError);
-            strafepower = Range.clip(strafeError * driveGain, -1.0, 1.0);
-        }
+//        double drivepower;
+//        double strafepower;
+//        if (driveError >= strafeError) {
+//            drivepower = Range.clip(driveError * driveGain, -1.0, 1.0);
+//            strafepower = Range.clip(strafeError * driveGain, -1.0, 1.0) * Math.abs(strafeError/driveError);
+//        } else {
+//            drivepower = Range.clip(driveError * driveGain, -1.0, 1.0) * Math.abs(driveError/strafeError);
+//            strafepower = Range.clip(strafeError * driveGain, -1.0, 1.0);
+//        }
+        double drivepower = Range.clip(driveError * driveGain, -1.0, 1.0) * Math.abs(driveError/distance);
+        double strafepower = Range.clip(strafeError * driveGain, -1.0, 1.0) * Math.abs(strafeError/distance);
 
         double adjust = minDrivePower / Math.abs(drivepower);
         if (adjust > 1.0) {
@@ -120,11 +132,6 @@ public class DriveSubsystem {
         double backLeftPower = drive - strafe + turn;
         double backRightPower = drive + strafe - turn;
 
-//        double frontLeftPower = drive + strafe + turn;
-//        double frontRightPower = drive - strafe - turn;
-//        double backLeftPower = drive - strafe + turn;
-//        double backRightPower = drive + strafe - turn;
-
         double max = Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower));
         max = Math.max(max, Math.abs(backLeftPower));
         max = Math.max(max, Math.abs(backRightPower));
@@ -142,22 +149,24 @@ public class DriveSubsystem {
         backrightmotor.setPower(backRightPower);
     }
 
-    public void stop() {
-        setMotion(0,0,0);
-    }
-
     public void feildOriented(double drive, double strafe, double turn){
         double currentheading = getHeading() * Math.PI / 180;
-        double drivepower = drive * Math.cos(-currentheading) - strafe * Math.sin(-currentheading);
-        double strafepower = drive * Math.sin(-currentheading) + strafe * Math.cos(-currentheading);
+        double drivepower = drive * Math.cos(-currentheading) + strafe * Math.sin(-currentheading);
+        double strafepower = -drive * Math.sin(-currentheading) + strafe * Math.cos(-currentheading);
 
+//        double turnadjust = turn > 0 ? -Math.pow(turn,2) * turnsensitivity : Math.pow(turn,2) * turnsensitivity;
+        double turnadjust = Math.pow(-turn,3) * turnsensitivity;
         if (Math.abs(turn) > 0.1) {
-            setTargetHeading(getHeading()+-turn*40);
+            setTargetHeading(getHeading()+turnadjust);
         }
 
         double turnpower = reachedHeading() ? 0 : gotoHeading();
 
-        setMotion(-drivepower,-strafepower,turnpower);
+        setMotion(drivepower,strafepower,turnpower);
+    }
+
+    public void stop() {
+        setMotion(0,0,0);
     }
 
     public boolean reachedPosition() {
@@ -192,6 +201,11 @@ public class DriveSubsystem {
 
     public void resetYaw(){
         imu.resetYaw();
+    }
+
+    public void updateTelemetry() {
+        TelemetryPacket telemetry = new TelemetryPacket();
+        FtcDashboard.getInstance().sendTelemetryPacket(telemetry);
     }
 }
 

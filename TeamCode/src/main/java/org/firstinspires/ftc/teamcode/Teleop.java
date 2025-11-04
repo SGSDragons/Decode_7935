@@ -48,7 +48,8 @@ public class  Teleop extends LinearOpMode{
                 driveSubsystem.resetYaw();
             }
 
-            driveSubsystem.setMotion(drive, strafe, turn);
+//            driveSubsystem.setMotion(drive, strafe, turn);
+            driveSubsystem.feildOriented(drive, strafe, turn);
 
             if (gamepad2.a) {
                 shooterSubsystem.setTargetSpeed(1);
@@ -73,6 +74,7 @@ public class  Teleop extends LinearOpMode{
 
             telemetry.addData("Heading", driveSubsystem.getHeading());
             telemetry.update();
+            driveSubsystem.updateTelemetry();
         }
     }
 }
