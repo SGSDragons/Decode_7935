@@ -1,10 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -34,22 +32,21 @@ public class  Teleop extends LinearOpMode{
 
             double drive = -gamepad1.left_stick_y;
             double strafe = gamepad1.left_stick_x;
-            double turn = gamepad1.right_stick_x;
+            double turnX = gamepad1.right_stick_x;
+            double turnY = -gamepad1.right_stick_y;
 
-            if (gamepad1.right_bumper && !driveSubsystem.reachedHeading()) {
+            // set target heading to goal and disable the joystick
+            if (gamepad1.right_bumper) {
                 driveSubsystem.setTargetHeading(-45);
-                turn = driveSubsystem.gotoHeading();
-            }
-            if (gamepad1.left_bumper && !driveSubsystem.reachedHeading()) {
+            } if (gamepad1.left_bumper) {
                 driveSubsystem.setTargetHeading(45);
-                turn = driveSubsystem.gotoHeading();
             }
             if (gamepad1.a) {
                 driveSubsystem.resetYaw();
             }
 
-//            driveSubsystem.setMotion(drive, strafe, turn);
-            driveSubsystem.feildOriented(drive, strafe, turn);
+//            driveSubsystem.setMotion(drive, strafe, turnX);
+            driveSubsystem.feildOriented(drive, strafe, turnY, turnY);
 
             if (gamepad2.a) {
                 shooterSubsystem.setTargetSpeed(1);

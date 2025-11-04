@@ -39,6 +39,7 @@ public class DriveSubsystem {
     int drivetarget = 0;
     int strafetarget = 0;
     double targetheading = 0;
+    boolean pointAtGoal;
 
 
     public DriveSubsystem(HardwareMap hardwareMap) {
@@ -149,17 +150,17 @@ public class DriveSubsystem {
         backrightmotor.setPower(backRightPower);
     }
 
-    public void feildOriented(double drive, double strafe, double turn){
+    public void feildOriented(double drive, double strafe, double turnX, double turnY){
         double currentheading = getHeading() * Math.PI / 180;
         double drivepower = drive * Math.cos(-currentheading) + strafe * Math.sin(-currentheading);
         double strafepower = -drive * Math.sin(-currentheading) + strafe * Math.cos(-currentheading);
 
-//        double turnadjust = turn > 0 ? -Math.pow(turn,2) * turnsensitivity : Math.pow(turn,2) * turnsensitivity;
-        double turnadjust = Math.pow(-turn,3) * turnsensitivity;
-        if (Math.abs(turn) > 0.1) {
-            setTargetHeading(getHeading()+turnadjust);
-        }
-
+        // disable turnadjust if pointAtGoal is true
+//        double turnadjust = Math.pow(-turn,3) * turnsensitivity;
+//        if (Math.abs(turn) > 0.1 && !pointAtGoal) {
+//            setTargetHeading(getHeading()+turnadjust);
+//        }
+        double targetheading = Math.abs(turnX+turnY) > 0.2 ? Math.atan(turnY/turnX) : getHeading();
         double turnpower = reachedHeading() ? 0 : gotoHeading();
 
         setMotion(drivepower,strafepower,turnpower);
