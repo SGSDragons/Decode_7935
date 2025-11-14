@@ -57,8 +57,8 @@ public class ShooterTest extends LinearOpMode {
             else {
                 shooter.disableShooter();
             }
-            if (gamepad2.left_trigger > 0.25) {
-                shooter.intake();
+//            if (gamepad2.left_trigger > 0.25) {
+//                shooter.intake();
             }
             if(gamepad2.dpad_down) {
                 shooter.setTargetSpeed(1);
@@ -75,4 +75,4 @@ public class ShooterTest extends LinearOpMode {
             }
 
         }
-    }}
+    }

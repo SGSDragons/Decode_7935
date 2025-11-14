@@ -16,8 +16,12 @@ public class AutoTest extends LinearOpMode {
     IntakeSubsystem intakeSubsystem;
     ShooterSubsystem shooterSubsystem;
 
-    public static int drive1 = 0;
-    public static int strafe1 = -40;
+    public static int drive1 = -40;
+    public static int strafe1 = 0;
+
+    public static int drive2 = -10;
+    public static int strafe2 = 30;
+    public static int turn2 = -45;
 
     @Override
     public void runOpMode() {
@@ -30,18 +34,34 @@ public class AutoTest extends LinearOpMode {
         driveSubsystem = new DriveSubsystem(hardwareMap);
         driveSubsystem.resetYaw();
 
-        drive1();
+        move(drive1,strafe1);
 //        shootball();
+
+        move(drive2,strafe2);
+        turn(turn2);
     }
 
-    public void drive1(){
-        driveSubsystem.setTargetPosition(drive1,strafe1);
+    public void move(int drive, int strafe){
+        driveSubsystem.setTargetPosition(drive,strafe);
         driveSubsystem.setTargetHeading(driveSubsystem.getHeading());
 
         while (!driveSubsystem.reachedPosition() || !driveSubsystem.reachedHeading()) {
             double[] translation = driveSubsystem.gotoPosition();
-            double turn = driveSubsystem.gotoHeading();
+            double turn = driveSubsystem.reachedPosition()? driveSubsystem.gotoHeading(true) : driveSubsystem.gotoHeading(false);
             driveSubsystem.setMotion(translation[0], translation[1], turn);
+
+            updateTelemetry(translation,turn);
+        }
+        driveSubsystem.stop();
+    }
+
+    public void turn(double degrees){
+        driveSubsystem.setTargetHeading(degrees);
+
+        while (!driveSubsystem.reachedHeading()) {
+            double[] translation = driveSubsystem.gotoPosition();
+            double turn = driveSubsystem.gotoHeading(true);
+            driveSubsystem.setMotion(0, 0, turn);
 
             updateTelemetry(translation,turn);
         }

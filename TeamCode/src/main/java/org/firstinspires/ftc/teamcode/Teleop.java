@@ -1,12 +1,16 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 @TeleOp(name="Teleop", group="Linear OpMode")
+@Config
 public class  Teleop extends LinearOpMode{
 
     ElapsedTime runtime = new ElapsedTime();
@@ -15,12 +19,18 @@ public class  Teleop extends LinearOpMode{
     ShooterSubsystem shooterSubsystem;
     DcMotor shooter;
 
+    public static double minpos = 0.68;
+    public static double maxpos = 1;
+    public static boolean runwheel = false;
+
     @Override
     public void runOpMode(){
 
         driveSubsystem = new DriveSubsystem(hardwareMap);
         intakeSubsystem = new IntakeSubsystem(hardwareMap);
         shooterSubsystem = new ShooterSubsystem(hardwareMap);
+
+        Servo servo = hardwareMap.get(Servo.class,"stopper");
 
         driveSubsystem.setTargetHeading(0);
         driveSubsystem.resetYaw();
@@ -32,21 +42,32 @@ public class  Teleop extends LinearOpMode{
 
             double drive = -gamepad1.left_stick_y;
             double strafe = gamepad1.left_stick_x;
-            double turnX = gamepad1.right_stick_x;
-            double turnY = -gamepad1.right_stick_y;
+            double turn = gamepad1.right_stick_x;
 
             // set target heading to goal and disable the joystick
             if (gamepad1.right_bumper) {
                 driveSubsystem.setTargetHeading(-45);
-            } if (gamepad1.left_bumper) {
+                turn = driveSubsystem.gotoHeading(true);
+                driveSubsystem.pointAtGoal = true;
+            } else if (gamepad1.left_bumper) {
                 driveSubsystem.setTargetHeading(45);
+                turn = driveSubsystem.gotoHeading(true);
+                driveSubsystem.pointAtGoal = true;
+            } else {
+                driveSubsystem.pointAtGoal = false;
             }
             if (gamepad1.a) {
                 driveSubsystem.resetYaw();
             }
 
-//            driveSubsystem.setMotion(drive, strafe, turnX);
-            driveSubsystem.feildOriented(drive, strafe, turnY, turnY);
+            if (gamepad2.dpad_up) {
+                servo.setPosition(minpos);
+            } if (gamepad2.dpad_down) {
+                servo.setPosition(maxpos);
+            }
+
+            driveSubsystem.setMotion(drive, strafe, turn);
+//            driveSubsystem.feildOriented(drive, strafe, turn);
 
             if (gamepad2.a) {
                 shooterSubsystem.setTargetSpeed(1);
@@ -62,16 +83,15 @@ public class  Teleop extends LinearOpMode{
                 shooterSubsystem.runShooter(shooterpower);
             }
 
-            double intakepower = gamepad2.left_stick_y;
-            if (gamepad2.right_bumper){
-                intakeSubsystem.setPower(0, intakepower);
-            } else{
-                intakeSubsystem.setPower(intakepower, intakepower);
-            }
+            double intakepower = gamepad2.right_bumper ? 0 : gamepad2.left_stick_y;
+            double indexpower = gamepad2.left_bumper ? 0 : gamepad2.left_stick_y;
+            intakeSubsystem.setPower(intakepower, indexpower);
+
 
             telemetry.addData("Heading", driveSubsystem.getHeading());
+            telemetry.addData("Limit switch", intakeSubsystem.limit.getState());
             telemetry.update();
-            driveSubsystem.updateTelemetry();
+//            driveSubsystem.updateTelemetry();
         }
     }
 }

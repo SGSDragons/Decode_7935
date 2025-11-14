@@ -7,6 +7,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -24,16 +25,17 @@ public class DriveSubsystem {
     double ticksperinch = (ticksperrotation*gearratio) / circumfrence;
 
     public static double turnsensitivity = 60;
-    public static double driveGain = 0.001;
-    public static double turnGain = -0.01;
-    public static double minDrivePower = 0.2;
-    public static double minStrafePower = 0.7;
-    public static double minTurnPower = 0.35;
+    public static double driveGain = 0.00075;
+    public static double turnGain = -0.0075;
+    public static double minDrivePower = 0.3;
+    public static double minStrafePower = 0.4;
+    public static double minTurnPower = 0.32;
+    public static double minTurnPower2 = 0.1;
 
-    DcMotor frontleftmotor;
-    DcMotor frontrightmotor;
-    DcMotor backleftmotor;
-    DcMotor backrightmotor;
+    DcMotorEx frontleftmotor;
+    DcMotorEx frontrightmotor;
+    DcMotorEx backleftmotor;
+    DcMotorEx backrightmotor;
     IMU imu;
 
     int drivetarget = 0;
@@ -43,10 +45,10 @@ public class DriveSubsystem {
 
 
     public DriveSubsystem(HardwareMap hardwareMap) {
-        frontleftmotor = hardwareMap.get(DcMotor.class, "frontleft");
-        frontrightmotor = hardwareMap.get(DcMotor.class, "frontright");
-        backleftmotor = hardwareMap.get(DcMotor.class, "backleft");
-        backrightmotor = hardwareMap.get(DcMotor.class, "backright");
+        frontleftmotor = hardwareMap.get(DcMotorEx.class, "frontleft");
+        frontrightmotor = hardwareMap.get(DcMotorEx.class, "frontright");
+        backleftmotor = hardwareMap.get(DcMotorEx.class, "backleft");
+        backrightmotor = hardwareMap.get(DcMotorEx.class, "backright");
         imu = hardwareMap.get(IMU.class,"imu");
 
         frontleftmotor.setDirection(DcMotor.Direction.FORWARD);
@@ -73,15 +75,6 @@ public class DriveSubsystem {
         int strafeError = strafetarget - currentstrafe;
         double distance = Math.sqrt(driveError*driveError + strafeError*strafeError);
 
-//        double drivepower;
-//        double strafepower;
-//        if (driveError >= strafeError) {
-//            drivepower = Range.clip(driveError * driveGain, -1.0, 1.0);
-//            strafepower = Range.clip(strafeError * driveGain, -1.0, 1.0) * Math.abs(strafeError/driveError);
-//        } else {
-//            drivepower = Range.clip(driveError * driveGain, -1.0, 1.0) * Math.abs(driveError/strafeError);
-//            strafepower = Range.clip(strafeError * driveGain, -1.0, 1.0);
-//        }
         double drivepower = Range.clip(driveError * driveGain, -1.0, 1.0) * Math.abs(driveError/distance);
         double strafepower = Range.clip(strafeError * driveGain, -1.0, 1.0) * Math.abs(strafeError/distance);
 
@@ -94,13 +87,20 @@ public class DriveSubsystem {
             strafepower *= adjust;
         }
 
-        if (Math.abs(driveError) <= 3) drivepower = 0;
-        if (Math.abs(strafeError) <= 3) strafepower = 0;
+        if (Math.abs(driveError) <= 5){
+            drivepower = 0;
+            drivetarget = getDrivePositions();
+        }
+        if (Math.abs(strafeError) <= 5) {
+            strafepower = 0;
+            strafetarget = getStrafePositions();
+        }
 
         return new double[] {drivepower, strafepower};
     }
 
-    public double gotoHeading() {
+    // set minPower lower to get rid of wobble
+    public double gotoHeading(boolean minPower) {
         double currentheading = getHeading();
         double turnerror = targetheading - currentheading;
         if (Math.abs(turnerror) > 180) {
@@ -109,7 +109,8 @@ public class DriveSubsystem {
         }
 
         double turnpower = turnerror * turnGain;
-        double adjust = minTurnPower / Math.abs(turnpower);
+
+        double adjust = minPower ? minTurnPower / Math.abs(turnpower) : minTurnPower2 / Math.abs(turnpower) ;
         if (adjust > 1.0) {
             turnpower *= adjust;
         }
@@ -150,18 +151,17 @@ public class DriveSubsystem {
         backrightmotor.setPower(backRightPower);
     }
 
-    public void feildOriented(double drive, double strafe, double turnX, double turnY){
+    public void feildOriented(double drive, double strafe, double turn){
         double currentheading = getHeading() * Math.PI / 180;
         double drivepower = drive * Math.cos(-currentheading) + strafe * Math.sin(-currentheading);
         double strafepower = -drive * Math.sin(-currentheading) + strafe * Math.cos(-currentheading);
 
         // disable turnadjust if pointAtGoal is true
-//        double turnadjust = Math.pow(-turn,3) * turnsensitivity;
-//        if (Math.abs(turn) > 0.1 && !pointAtGoal) {
-//            setTargetHeading(getHeading()+turnadjust);
-//        }
-        double targetheading = Math.abs(turnX+turnY) > 0.2 ? Math.atan(turnY/turnX) : getHeading();
-        double turnpower = reachedHeading() ? 0 : gotoHeading();
+        double turnadjust = Math.pow(-turn,3) * turnsensitivity;
+        if (Math.abs(turn) > 0.1 && !pointAtGoal) {
+            setTargetHeading(getHeading()+turnadjust);
+        }
+        double turnpower = reachedHeading() ? 0 : gotoHeading(true);
 
         setMotion(drivepower,strafepower,turnpower);
     }
@@ -204,8 +204,9 @@ public class DriveSubsystem {
         imu.resetYaw();
     }
 
-    public void updateTelemetry() {
+    public void updateTelemetry(double stat) {
         TelemetryPacket telemetry = new TelemetryPacket();
+        telemetry.put("Target heading", stat);
         FtcDashboard.getInstance().sendTelemetryPacket(telemetry);
     }
 }
