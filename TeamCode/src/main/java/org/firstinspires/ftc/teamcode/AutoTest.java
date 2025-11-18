@@ -72,7 +72,7 @@ public class AutoTest extends LinearOpMode {
         while (runtime.milliseconds() <= 10000) {
             shooterSubsystem.setTargetSpeed(1);
             shooterSubsystem.enableShooter();
-            intakeSubsystem.setPower(-0.7,0);
+            intakeSubsystem.setPower(-0.7,0, false);
         }
     }
 

@@ -45,8 +45,9 @@ public class ShooterSubsystem {
     }
     public void enableShooter() {
 
+        // Don't run index motors if the wheel is set to its default speed
         flywheel.setVelocity(targetflywheelspeed);
-        if (atTargetVelocity()) {
+        if (atTargetVelocity() && targetflywheelspeed != defalt_speed) {
             indexer.setVelocity(-feedSpeed);
         }
 
@@ -65,16 +66,15 @@ public class ShooterSubsystem {
         return (Math.abs(flywheel.getVelocity() - targetflywheelspeed) < 100);
     }
 
+    public void runShooter(double power) {
+        flywheel.setPower(power);
+    }
+
     public void updateTelemetry() {
         TelemetryPacket telemetry = new TelemetryPacket();
         telemetry.put("flywheel.speed", flywheel.getVelocity());
         telemetry.put("target.speed" , targetflywheelspeed);
-//        telemetry.put("limit switch", limit.getState());
         FtcDashboard.getInstance().sendTelemetryPacket(telemetry);
-    }
-
-    public void runShooter(double power) {
-        flywheel.setPower(power);
     }
 }
 

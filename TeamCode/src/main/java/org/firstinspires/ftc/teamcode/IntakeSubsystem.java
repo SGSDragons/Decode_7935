@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -52,16 +54,25 @@ public class IntakeSubsystem {
         intakemotor.setPower(power);
     }
 
-    public void setIndexPower(double power){
-        if (limit.getState()){
+    // Only stop the index motor when the ball hits the limit if enableLimit is true
+    public void setIndexPower(double power, boolean enableLimit){
+        if (limit.getState() && !enableLimit){
             indexmotor.setPower(power);
         } else {
             indexmotor.setPower(0);
         }
     }
 
-    public void setPower(double intakepower, double indexpower){
+    public void setPower(double intakepower, double indexpower, boolean enableLimit){
         setIntakePower(intakepower);
-        setIndexPower(indexpower);
+        setIndexPower(indexpower, enableLimit);
+    }
+
+    public void updateTelemetry() {
+        TelemetryPacket telemetry = new TelemetryPacket();
+        telemetry.put("Intake Motor Velocity", intakemotor.getVelocity());
+        telemetry.put("Index Motor Velocity", indexmotor.getVelocity());
+        telemetry.put("Limit Switch", limit.getState());
+        FtcDashboard.getInstance().sendTelemetryPacket(telemetry);
     }
 }

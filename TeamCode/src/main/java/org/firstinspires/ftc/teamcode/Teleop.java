@@ -30,8 +30,6 @@ public class  Teleop extends LinearOpMode{
         intakeSubsystem = new IntakeSubsystem(hardwareMap);
         shooterSubsystem = new ShooterSubsystem(hardwareMap);
 
-        Servo servo = hardwareMap.get(Servo.class,"stopper");
-
         driveSubsystem.setTargetHeading(0);
         driveSubsystem.resetYaw();
 
@@ -60,12 +58,6 @@ public class  Teleop extends LinearOpMode{
                 driveSubsystem.resetYaw();
             }
 
-            if (gamepad2.dpad_up) {
-                servo.setPosition(minpos);
-            } if (gamepad2.dpad_down) {
-                servo.setPosition(maxpos);
-            }
-
             driveSubsystem.setMotion(drive, strafe, turn);
 //            driveSubsystem.feildOriented(drive, strafe, turn);
 
@@ -85,7 +77,7 @@ public class  Teleop extends LinearOpMode{
 
             double intakepower = gamepad2.right_bumper ? 0 : gamepad2.left_stick_y;
             double indexpower = gamepad2.left_bumper ? 0 : gamepad2.left_stick_y;
-            intakeSubsystem.setPower(intakepower, indexpower);
+            intakeSubsystem.setPower(intakepower, indexpower, true);
 
 
             telemetry.addData("Heading", driveSubsystem.getHeading());

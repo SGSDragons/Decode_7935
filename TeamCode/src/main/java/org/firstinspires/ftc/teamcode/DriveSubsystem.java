@@ -204,9 +204,14 @@ public class DriveSubsystem {
         imu.resetYaw();
     }
 
-    public void updateTelemetry(double stat) {
+    public void updateTelemetry() {
         TelemetryPacket telemetry = new TelemetryPacket();
-        telemetry.put("Target heading", stat);
+        telemetry.put("Current Heading", getHeading());
+        telemetry.put("Target Heading", targetheading);
+        telemetry.put("Current Drive", getDrivePositions());
+        telemetry.put("Target Drive", drivetarget);
+        telemetry.put("Current Strafe", getStrafePositions());
+        telemetry.put("Target Strafe", strafetarget);
         FtcDashboard.getInstance().sendTelemetryPacket(telemetry);
     }
 }
