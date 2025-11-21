@@ -5,6 +5,7 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -14,6 +15,8 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
+import java.util.Base64;
 
 
 @Config
@@ -36,7 +39,10 @@ public class DriveSubsystem {
     DcMotorEx frontrightmotor;
     DcMotorEx backleftmotor;
     DcMotorEx backrightmotor;
+    DcMotorEx leftwheel;
     IMU imu;
+
+    GoBildaPinpointDriver.EncoderDirection motor;
 
     int drivetarget = 0;
     int strafetarget = 0;
@@ -50,6 +56,8 @@ public class DriveSubsystem {
         backleftmotor = hardwareMap.get(DcMotorEx.class, "backleft");
         backrightmotor = hardwareMap.get(DcMotorEx.class, "backright");
         imu = hardwareMap.get(IMU.class,"imu");
+
+        leftwheel = hardwareMap.get(DcMotorEx.class, "leftwheel");
 
         frontleftmotor.setDirection(DcMotor.Direction.FORWARD);
         frontrightmotor.setDirection(DcMotor.Direction.FORWARD);
@@ -212,6 +220,7 @@ public class DriveSubsystem {
         telemetry.put("Target Drive", drivetarget);
         telemetry.put("Current Strafe", getStrafePositions());
         telemetry.put("Target Strafe", strafetarget);
+        telemetry.put("Encoder Wheel", leftwheel.getCurrentPosition());
         FtcDashboard.getInstance().sendTelemetryPacket(telemetry);
     }
 }

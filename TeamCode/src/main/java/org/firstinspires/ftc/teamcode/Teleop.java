@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -71,19 +72,27 @@ public class  Teleop extends LinearOpMode{
                 shooterSubsystem.setTargetSpeed(3);
                 shooterSubsystem.enableShooter();
             } else {
-                double shooterpower = -gamepad2.right_stick_y;
-                shooterSubsystem.runShooter(shooterpower);
+//                double shooterpower = -gamepad2.right_stick_y;
+//                shooterSubsystem.runShooter(shooterpower);
+                shooterSubsystem.setTargetSpeed(0);
+                shooterSubsystem.enableShooter();
             }
 
             double intakepower = gamepad2.right_bumper ? 0 : gamepad2.left_stick_y;
             double indexpower = gamepad2.left_bumper ? 0 : gamepad2.left_stick_y;
             intakeSubsystem.setPower(intakepower, indexpower, true);
 
+            // make sure the limit switch doesn't stop the indexer right as the ball hits the flywheel
+//            if (shooterSubsystem.atTargetVelocity() && shooterSubsystem.targetflywheelspeed != shooterSubsystem.defalt_speed) {
+//                intakeSubsystem.setPower(intakepower, 0.8, false);
+//            } else {
+//                intakeSubsystem.setPower(intakepower, indexpower, true);
+//            }
 
-            telemetry.addData("Heading", driveSubsystem.getHeading());
-            telemetry.addData("Limit switch", intakeSubsystem.limit.getState());
+            driveSubsystem.updateTelemetry();
+            intakeSubsystem.updateTelemetry();
+            shooterSubsystem.updateTelemetry();
             telemetry.update();
-//            driveSubsystem.updateTelemetry();
         }
     }
 }

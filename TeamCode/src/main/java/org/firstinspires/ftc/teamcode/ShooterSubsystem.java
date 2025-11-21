@@ -5,19 +5,18 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 @Config
 public class ShooterSubsystem {
 
     public static int feedSpeed = 700;
-    public static double defalt_speed = 1400;
-    public static double speed_needed1 = 1600;
-    public static double speed_needed2 = 1800;
-    public static double speed_needed3 = 2100;
+    public double defalt_speed = 900;
+    public static double speed_needed1 = 1350;
+    public static double speed_needed2 = 1500;
+    public static double speed_needed3 = 1500;
     public double targetflywheelspeed = speed_needed2;
-    Integer moverismoved;
+    public static double tolorance = 120;
 
     // Motors
     DcMotorEx flywheel;
@@ -50,8 +49,6 @@ public class ShooterSubsystem {
         if (atTargetVelocity() && targetflywheelspeed != defalt_speed) {
             indexer.setVelocity(-feedSpeed);
         }
-
-        updateTelemetry();
     }
 
     public void disableShooter () {
@@ -59,11 +56,10 @@ public class ShooterSubsystem {
 //        flywheel.setPower(0);
 //        indexer.setPower(1);
         updateTelemetry();
-        moverismoved = null;
     }
 
     public boolean atTargetVelocity() {
-        return (Math.abs(flywheel.getVelocity() - targetflywheelspeed) < 100);
+        return (Math.abs(flywheel.getVelocity() - targetflywheelspeed) < tolorance);
     }
 
     public void runShooter(double power) {
@@ -72,8 +68,8 @@ public class ShooterSubsystem {
 
     public void updateTelemetry() {
         TelemetryPacket telemetry = new TelemetryPacket();
-        telemetry.put("flywheel.speed", flywheel.getVelocity());
-        telemetry.put("target.speed" , targetflywheelspeed);
+        telemetry.put("flywheel velocity", flywheel.getVelocity());
+        telemetry.put("target velicity" , targetflywheelspeed);
         FtcDashboard.getInstance().sendTelemetryPacket(telemetry);
     }
 }
