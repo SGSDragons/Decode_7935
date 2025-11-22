@@ -30,7 +30,7 @@ public class DriveSubsystem {
     public static double minStrafePower = 0.5;
     public static double minTurnPower = 0.35;
     public static double minTurnPower2 = 0.1;
-    public static double tolorace = 100;
+    public static double tolerance = 100;
 
     DcMotorEx frontleftmotor;
     DcMotorEx frontrightmotor;
@@ -98,10 +98,10 @@ public class DriveSubsystem {
             strafepower *= adjust;
         }
 
-        if (Math.abs(driveError) <= tolorace){
+        if (Math.abs(driveError) <= tolerance){
             drivepower = 0;
         }
-        if (Math.abs(strafeError) <= tolorace) {
+        if (Math.abs(strafeError) <= tolerance) {
             strafepower = 0;
         }
 
@@ -183,8 +183,8 @@ public class DriveSubsystem {
     }
 
     public boolean reachedPosition() {
-        boolean drive = (Math.abs(drivetarget - getDrivePositions()) <= tolorace);
-        boolean strafe = (Math.abs(strafetarget - getStrafePositions()) <= tolorace);
+        boolean drive = (Math.abs(drivetarget - getDrivePositions()) <= tolerance);
+        boolean strafe = (Math.abs(strafetarget - getStrafePositions()) <= tolerance);
         return (drive && strafe);
     }
 

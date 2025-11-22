@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-//import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -8,7 +7,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name = "AutoTest")
 @Config
-//@Config
 public class AutoTest extends LinearOpMode {
 
     ElapsedTime runtime = new ElapsedTime();
@@ -35,7 +33,7 @@ public class AutoTest extends LinearOpMode {
         driveSubsystem.resetYaw();
 
         move(drive1,strafe1);
-//        shootball();
+        shootball();
 
         turn(turn2);
         move(drive2,strafe2);
@@ -72,7 +70,12 @@ public class AutoTest extends LinearOpMode {
         while (runtime.milliseconds() <= 10000) {
             shooterSubsystem.setTargetSpeed(1);
             shooterSubsystem.enableShooter();
-            intakeSubsystem.setPower(-0.7,0, false);
+
+            if (shooterSubsystem.atTargetVelocity()) {
+                intakeSubsystem.setPower(-0.7,-0.7, false);
+            } else {
+                intakeSubsystem.setPower(-0.7,0, true);
+            }
 
             intakeSubsystem.updateTelemetry();
             shooterSubsystem.updateTelemetry();

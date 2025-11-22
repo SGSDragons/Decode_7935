@@ -1,0 +1,40 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+@Autonomous(name = "LongBlueAuto")
+@Config
+public class LongBlueAuto extends LinearOpMode{
+
+    ElapsedTime runtime = new ElapsedTime();
+    DriveSubsystem driveSubsystem;
+    IntakeSubsystem intakeSubsystem;
+    ShooterSubsystem shooterSubsystem;
+
+    public static int drive1 = 5;
+    public static int strafe1 = 0;
+    public static int turn1 = 30;
+
+
+    @Override
+    public void runOpMode() {
+
+        waitForStart();
+        runtime.reset();
+
+        intakeSubsystem = new IntakeSubsystem(hardwareMap);
+        shooterSubsystem = new ShooterSubsystem(hardwareMap);
+        driveSubsystem = new DriveSubsystem(hardwareMap);
+        driveSubsystem.resetYaw();
+
+        AutoCommands commands = new AutoCommands(driveSubsystem, intakeSubsystem, shooterSubsystem);
+
+        commands.move(drive1,strafe1);
+        commands.turn(turn1);
+
+        commands.shootball();
+    }
+}
