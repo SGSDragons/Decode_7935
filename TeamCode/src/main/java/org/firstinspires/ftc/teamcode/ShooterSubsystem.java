@@ -12,11 +12,16 @@ public class ShooterSubsystem {
 
     public static int feedSpeed = 700;
     public double defalt_speed = 900;
-    public static double speed_needed1 = 1350;
-    public static double speed_needed2 = 1500;
-    public static double speed_needed3 = 1500;
+    public static double speed_needed1 = 1500;
+    public static double speed_needed2 = 1600;
+    public static double speed_needed3 = 1750;
     public double targetflywheelspeed = speed_needed2;
-    public static double tolorance = 120;
+
+    public static double tolorance = 50;
+    public static double kp = 50;
+    public static double ki = 0;
+    public static double kd = 0;
+    public static double kf = 15;
 
     // Motors
     DcMotorEx flywheel;
@@ -43,12 +48,9 @@ public class ShooterSubsystem {
         }
     }
     public void enableShooter() {
-
         // Don't run index motors if the wheel is set to its default speed
+        flywheel.setVelocityPIDFCoefficients(kp,ki,kd,kf);
         flywheel.setVelocity(targetflywheelspeed);
-        if (atTargetVelocity() && targetflywheelspeed != defalt_speed) {
-            indexer.setVelocity(-feedSpeed);
-        }
     }
 
     public void disableShooter () {

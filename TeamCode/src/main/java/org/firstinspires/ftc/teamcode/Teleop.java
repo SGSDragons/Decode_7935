@@ -22,7 +22,7 @@ public class  Teleop extends LinearOpMode{
 
     public static double minpos = 0.68;
     public static double maxpos = 1;
-    public static boolean runwheel = false;
+    public static boolean runwheel = true;
 
     @Override
     public void runOpMode(){
@@ -48,15 +48,28 @@ public class  Teleop extends LinearOpMode{
                 driveSubsystem.setTargetHeading(-45);
                 turn = driveSubsystem.gotoHeading(true);
                 driveSubsystem.pointAtGoal = true;
+            } else if (gamepad1.right_trigger >= 0.2) {
+                driveSubsystem.setTargetHeading(-60);
+                turn = driveSubsystem.gotoHeading(true);
+                driveSubsystem.pointAtGoal = true;
             } else if (gamepad1.left_bumper) {
                 driveSubsystem.setTargetHeading(45);
+                turn = driveSubsystem.gotoHeading(true);
+                driveSubsystem.pointAtGoal = true;
+            } else if (gamepad1.left_trigger >= 0.2) {
+                driveSubsystem.setTargetHeading(60);
                 turn = driveSubsystem.gotoHeading(true);
                 driveSubsystem.pointAtGoal = true;
             } else {
                 driveSubsystem.pointAtGoal = false;
             }
+
             if (gamepad1.a) {
                 driveSubsystem.resetYaw();
+            }
+            if (gamepad2.b) {
+                runwheel = !runwheel;
+                shooterSubsystem.defalt_speed = runwheel ? 900 : 0;
             }
 
             driveSubsystem.setMotion(drive, strafe, turn);
@@ -64,30 +77,24 @@ public class  Teleop extends LinearOpMode{
 
             if (gamepad2.a) {
                 shooterSubsystem.setTargetSpeed(1);
-                shooterSubsystem.enableShooter();
             } else if (gamepad2.x) {
                 shooterSubsystem.setTargetSpeed(2);
-                shooterSubsystem.enableShooter();
             }  else if (gamepad2.y) {
                 shooterSubsystem.setTargetSpeed(3);
-                shooterSubsystem.enableShooter();
             } else {
-//                double shooterpower = -gamepad2.right_stick_y;
-//                shooterSubsystem.runShooter(shooterpower);
                 shooterSubsystem.setTargetSpeed(0);
-                shooterSubsystem.enableShooter();
             }
+            shooterSubsystem.enableShooter();
 
             double intakepower = gamepad2.right_bumper ? 0 : gamepad2.left_stick_y;
             double indexpower = gamepad2.left_bumper ? 0 : gamepad2.left_stick_y;
-            intakeSubsystem.setPower(intakepower, indexpower, true);
 
             // make sure the limit switch doesn't stop the indexer right as the ball hits the flywheel
-//            if (shooterSubsystem.atTargetVelocity() && shooterSubsystem.targetflywheelspeed != shooterSubsystem.defalt_speed) {
-//                intakeSubsystem.setPower(intakepower, 0.8, false);
-//            } else {
-//                intakeSubsystem.setPower(intakepower, indexpower, true);
-//            }
+            if (shooterSubsystem.atTargetVelocity() && shooterSubsystem.targetflywheelspeed != shooterSubsystem.defalt_speed) {
+                intakeSubsystem.setPower(intakepower, -0.8, false);
+            } else {
+                intakeSubsystem.setPower(intakepower, indexpower, true);
+            }
 
             driveSubsystem.updateTelemetry();
             intakeSubsystem.updateTelemetry();

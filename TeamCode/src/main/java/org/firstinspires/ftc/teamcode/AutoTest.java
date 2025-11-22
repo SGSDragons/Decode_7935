@@ -16,11 +16,11 @@ public class AutoTest extends LinearOpMode {
     IntakeSubsystem intakeSubsystem;
     ShooterSubsystem shooterSubsystem;
 
-    public static int drive1 = -40;
+    public static int drive1 = -60;
     public static int strafe1 = 0;
 
-    public static int drive2 = -10;
-    public static int strafe2 = 30;
+    public static int drive2 = 15;
+    public static int strafe2 = -4;
     public static int turn2 = -45;
 
     @Override
@@ -37,8 +37,8 @@ public class AutoTest extends LinearOpMode {
         move(drive1,strafe1);
 //        shootball();
 
-        move(drive2,strafe2);
         turn(turn2);
+        move(drive2,strafe2);
     }
 
     public void move(int drive, int strafe){
@@ -50,7 +50,7 @@ public class AutoTest extends LinearOpMode {
             double turn = driveSubsystem.reachedPosition()? driveSubsystem.gotoHeading(true) : driveSubsystem.gotoHeading(false);
             driveSubsystem.setMotion(translation[0], translation[1], turn);
 
-            updateTelemetry(translation,turn);
+            driveSubsystem.updateTelemetry();
         }
         driveSubsystem.stop();
     }
@@ -63,7 +63,7 @@ public class AutoTest extends LinearOpMode {
             double turn = driveSubsystem.gotoHeading(true);
             driveSubsystem.setMotion(0, 0, turn);
 
-            updateTelemetry(translation,turn);
+            driveSubsystem.updateTelemetry();
         }
         driveSubsystem.stop();
     }
@@ -73,16 +73,9 @@ public class AutoTest extends LinearOpMode {
             shooterSubsystem.setTargetSpeed(1);
             shooterSubsystem.enableShooter();
             intakeSubsystem.setPower(-0.7,0, false);
-        }
-    }
 
-    public void updateTelemetry(double[] translation, double turn){
-        telemetry.addData("Current heading", driveSubsystem.getHeading());
-        telemetry.addData("Target heading", driveSubsystem.targetheading);
-        telemetry.addData("Drive Power", translation[0]);
-        telemetry.addData("Strafe Power", translation[1]);
-        telemetry.addData("Turn Power", turn);
-        telemetry.addData("Error", driveSubsystem.strafetarget - driveSubsystem.getStrafePositions());
-        telemetry.update();
+            intakeSubsystem.updateTelemetry();
+            shooterSubsystem.updateTelemetry();
+        }
     }
 }

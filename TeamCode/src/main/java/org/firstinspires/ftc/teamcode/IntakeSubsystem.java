@@ -56,12 +56,10 @@ public class IntakeSubsystem {
 
     // Only stop the index motor when the ball hits the limit if enableLimit is true
     public void setIndexPower(double power, boolean enableLimit){
-        if (enableLimit) {
-            if (limit.getState()){
-                indexmotor.setPower(power);
-            } else {
-                indexmotor.setPower(0);
-            }
+        if (enableLimit && !limit.getState()) {
+            indexmotor.setPower(0);
+        } else {
+            indexmotor.setPower(power);
         }
     }
 
