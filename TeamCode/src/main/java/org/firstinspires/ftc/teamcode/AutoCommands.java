@@ -59,20 +59,23 @@ public class AutoCommands {
     }
 
     // shoot ball and intake when shooter is up to speed
-    public void shootball(){
-        long start = System.nanoTime();
-        while (System.nanoTime() - start <= 5000000) {
-            this.shooterSubsystem.setTargetSpeed(1);
+    public void shootball(int speed){
+        long start = System.nanoTime()/1000;
+        while (System.nanoTime()/1000 - start <= 7000000) {
+            this.shooterSubsystem.setTargetSpeed(speed);
             this.shooterSubsystem.enableShooter();
 
             if (this.shooterSubsystem.atTargetVelocity()) {
-                this.intakeSubsystem.setPower(-0.7,-0.7, false);
+                this.intakeSubsystem.setPower(0,-0.7, false);
+            } else if (this.intakeSubsystem.limit.getState()){
+                this.intakeSubsystem.setPower(-0.7,-0.7, true);
             } else {
-                this.intakeSubsystem.setPower(-0.7,0, true);
+                this.intakeSubsystem.setPower(0,0, true);
             }
 
             this.intakeSubsystem.updateTelemetry();
             this.shooterSubsystem.updateTelemetry();
         }
+        this.shooterSubsystem.disableShooter();
     }
 }

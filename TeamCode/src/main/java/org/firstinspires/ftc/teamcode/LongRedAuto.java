@@ -16,7 +16,7 @@ public class LongRedAuto extends LinearOpMode{
 
     public static int drive1 = 5;
     public static int strafe1 = 0;
-    public static int turn1 = -30;
+    public static int turn1 = -17;
 
 
     @Override
@@ -32,9 +32,7 @@ public class LongRedAuto extends LinearOpMode{
 
         AutoCommands commands = new AutoCommands(driveSubsystem, intakeSubsystem, shooterSubsystem);
 
+        commands.shootball(3);
         commands.move(drive1,strafe1);
-        commands.turn(turn1);
-
-        commands.shootball();
     }
 }

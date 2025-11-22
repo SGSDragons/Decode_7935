@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -14,7 +16,7 @@ public class AutoTest extends LinearOpMode {
     IntakeSubsystem intakeSubsystem;
     ShooterSubsystem shooterSubsystem;
 
-    public static int drive1 = -60;
+    public static int drive1 = -50;
     public static int strafe1 = 0;
 
     public static int drive2 = 15;
@@ -34,9 +36,6 @@ public class AutoTest extends LinearOpMode {
 
         move(drive1,strafe1);
         shootball();
-
-        turn(turn2);
-        move(drive2,strafe2);
     }
 
     public void move(int drive, int strafe){
@@ -68,15 +67,20 @@ public class AutoTest extends LinearOpMode {
 
     public void shootball(){
         while (runtime.milliseconds() <= 10000) {
-            shooterSubsystem.setTargetSpeed(1);
+            shooterSubsystem.setTargetSpeed(5);
             shooterSubsystem.enableShooter();
 
             if (shooterSubsystem.atTargetVelocity()) {
-                intakeSubsystem.setPower(-0.7,-0.7, false);
+                intakeSubsystem.setPower(0,-0.7, false);
+            } else if (intakeSubsystem.limit.getState()){
+                intakeSubsystem.setPower(-0.7,-0.7, true);
             } else {
-                intakeSubsystem.setPower(-0.7,0, true);
+                intakeSubsystem.setPower(0,0, true);
             }
 
+            TelemetryPacket telemetry = new TelemetryPacket();
+            telemetry.put("flywheel atvelocity", shooterSubsystem.atTargetVelocity());
+            FtcDashboard.getInstance().sendTelemetryPacket(telemetry);
             intakeSubsystem.updateTelemetry();
             shooterSubsystem.updateTelemetry();
         }

@@ -13,8 +13,9 @@ public class ShooterSubsystem {
     public static int feedSpeed = 700;
     public double defalt_speed = 900;
     public static double speed_needed1 = 1500;
-    public static double speed_needed2 = 1600;
-    public static double speed_needed3 = 1750;
+    public static double speed_needed2 = 1550;
+    public static double speed_needed3 = 1700;
+    public static double speed_needed5 = 1450;
     public double targetflywheelspeed = speed_needed2;
 
     public static double tolorance = 50;
@@ -44,6 +45,7 @@ public class ShooterSubsystem {
             case 1: targetflywheelspeed = speed_needed1; break;
             case 2: targetflywheelspeed = speed_needed2; break;
             case 3: targetflywheelspeed = speed_needed3; break;
+            case 5: targetflywheelspeed = speed_needed5; break;
             default: break;
         }
     }

@@ -14,14 +14,14 @@ public class BlueAuto extends LinearOpMode{
     IntakeSubsystem intakeSubsystem;
     ShooterSubsystem shooterSubsystem;
 
-    public static int drive1 = -60;
+    public static int drive1 = -53;
     public static int strafe1 = 0;
 
-    public static int drive2 = 15;
-    public static int strafe2 = 4;
+    public static int drive2 = 40;
+    public static int strafe2 = 0;
     public static int turn1 = 45;
 
-    public static int drive3 = 15;
+    public static int drive3 = -30;
 
 
     @Override
@@ -38,17 +38,15 @@ public class BlueAuto extends LinearOpMode{
         AutoCommands commands = new AutoCommands(driveSubsystem, intakeSubsystem, shooterSubsystem);
 
         commands.move(drive1,strafe1);
-        commands.shootball();
+        commands.shootball(5);
 
         commands.turn(turn1);
-        commands.move(drive2,strafe2);
 
+        commands.intakeball(drive2,0);
         commands.intakeball(drive3,0);
-        commands.intakeball(-drive3,0);
 
-        commands.move(-drive2,-strafe2);
         commands.turn(0);
 
-        commands.shootball();
+        commands.shootball(5);
     }
 }
