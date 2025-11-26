@@ -40,7 +40,7 @@ import java.util.List;
 public final class TuningOpModes {
 
     public static final String GROUP = "quickstart";
-    public static final boolean DISABLED = true;
+    public static final boolean DISABLED = false;
 
     private TuningOpModes() {}
 

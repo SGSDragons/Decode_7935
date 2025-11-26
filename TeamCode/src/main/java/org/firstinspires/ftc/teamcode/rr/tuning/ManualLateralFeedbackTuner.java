@@ -9,8 +9,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
 import org.firstinspires.ftc.teamcode.rr.ThreeDeadWheelLocalizer;
 
+@Config
 public final class ManualLateralFeedbackTuner extends LinearOpMode {
-    public static double DISTANCE = 64;
+    public static double DISTANCE = 20;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -24,7 +25,7 @@ public final class ManualLateralFeedbackTuner extends LinearOpMode {
         while (opModeIsActive()) {
             Actions.runBlocking(
                     drive.actionBuilder(new Pose2d(0, 0, Math.PI/2))
-                            .setTangent(Math.PI/2)
+                            .setTangent(0.0)
                             .lineToXConstantHeading(DISTANCE)
                             .lineToXConstantHeading(0)
                             .build());

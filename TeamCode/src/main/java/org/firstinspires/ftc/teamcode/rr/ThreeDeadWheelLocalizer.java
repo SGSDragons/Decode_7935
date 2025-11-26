@@ -20,6 +20,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.rr.messages.ThreeDeadWheelInputsMessage;
 
 @Config
@@ -95,6 +96,7 @@ public final class ThreeDeadWheelLocalizer implements Localizer {
         int par1PosDelta = par1PosVel.position - lastPar1Pos;
         int perpPosDelta = perpPosVel.position - lastPerpPos;
 
+        double angle = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
         Twist2dDual<Time> twist = new Twist2dDual<>(
                 new Vector2dDual<>(
                         new DualNum<Time>(new double[] {
@@ -126,6 +128,8 @@ public final class ThreeDeadWheelLocalizer implements Localizer {
         lastPerpPos = perpPosVel.position;
 
         pose = pose.plus(twist.value());
+//        pose = new Pose2d(pose.position, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+
         return twist.velocity().value();
     }
 }

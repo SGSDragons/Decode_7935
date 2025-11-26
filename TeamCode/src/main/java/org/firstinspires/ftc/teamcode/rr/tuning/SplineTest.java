@@ -30,6 +30,7 @@ public final class SplineTest extends LinearOpMode {
 
         Action motion = drive.actionBuilder(drive.localizer.getPose())
                 .splineTo(new Vector2d(20.0, 20.0), Math.PI/2)
+                .splineTo(new Vector2d(20, 40.0), Math.PI / 2, new TranslationalVelConstraint(15.0))
                 .build();
         Actions.runBlocking(motion);
 

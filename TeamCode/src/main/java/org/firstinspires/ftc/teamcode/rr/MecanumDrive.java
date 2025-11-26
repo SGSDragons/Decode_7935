@@ -66,8 +66,10 @@ public final class MecanumDrive {
         private final double MEASURED_DISTANCE_IN_INCHES = 141.5;
         private final int MEASURED_TICKS = 47758;
         public double inPerTick = MEASURED_DISTANCE_IN_INCHES / MEASURED_TICKS;
-        public double lateralInPerTick = inPerTick;
+        public double lateralInPerTick = inPerTick/2;
         public double trackWidthTicks = 3260.671910516567;
+
+        public double backCompensation = 0.97;
 
         // feedforward parameters (in tick units)
         public double kS = 2.45;
@@ -85,18 +87,19 @@ public final class MecanumDrive {
 
         // path controller gains
         public double axialGain = 5.0;
-        public double lateralGain = 3.0;
+        public double lateralGain = 12.0;
         public double headingGain = 2.2; // shared with turn
 
         public double axialVelGain = 0.2;
-        public double lateralVelGain = 0.0;
-        public double headingVelGain = 0.0; // shared with turn
+        public double lateralVelGain = 0.15;
+        public double headingVelGain = 0.2; // shared with turn
     }
 
     public static Params PARAMS = new Params();
 
     public final MecanumKinematics kinematics = new MecanumKinematics(
-            PARAMS.inPerTick * PARAMS.trackWidthTicks, PARAMS.inPerTick / PARAMS.lateralInPerTick);
+            PARAMS.inPerTick * PARAMS.trackWidthTicks,
+            PARAMS.inPerTick / PARAMS.lateralInPerTick);
 
     public final TurnConstraints defaultTurnConstraints = new TurnConstraints(
             PARAMS.maxAngVel, -PARAMS.maxAngAccel, PARAMS.maxAngAccel);
@@ -166,10 +169,10 @@ public final class MecanumDrive {
             maxPowerMag = Math.max(maxPowerMag, power.value());
         }
 
-        leftFront.setPower(wheelVels.leftFront.get(0) / maxPowerMag);
+        leftFront.setPower(wheelVels.leftFront.get(0) / (maxPowerMag * PARAMS.backCompensation));
         leftBack.setPower(wheelVels.leftBack.get(0) / maxPowerMag);
         rightBack.setPower(wheelVels.rightBack.get(0) / maxPowerMag);
-        rightFront.setPower(wheelVels.rightFront.get(0) / maxPowerMag);
+        rightFront.setPower(wheelVels.rightFront.get(0) / (maxPowerMag * PARAMS.backCompensation));
     }
 
     public final class FollowTrajectoryAction implements Action {
