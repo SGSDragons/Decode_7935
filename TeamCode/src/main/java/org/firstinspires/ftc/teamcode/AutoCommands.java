@@ -19,7 +19,7 @@ public class AutoCommands {
 
         while (!this.driveSubsystem.reachedPosition() || !this.driveSubsystem.reachedHeading()) {
             double[] translation = this.driveSubsystem.gotoPosition();
-            double turn = this.driveSubsystem.reachedPosition()? this.driveSubsystem.gotoHeading(true) : this.driveSubsystem.gotoHeading(false);
+            double turn = this.driveSubsystem.gotoHeading();
             this.driveSubsystem.setMotion(translation[0], translation[1], turn);
 
             this.driveSubsystem.updateTelemetry();
@@ -33,7 +33,7 @@ public class AutoCommands {
 
         while (!this.driveSubsystem.reachedHeading()) {
             double[] translation = this.driveSubsystem.gotoPosition();
-            double turn = this.driveSubsystem.gotoHeading(true);
+            double turn = this.driveSubsystem.gotoHeading();
             this.driveSubsystem.setMotion(0, 0, turn);
 
             this.driveSubsystem.updateTelemetry();
@@ -48,7 +48,7 @@ public class AutoCommands {
 
         while (!this.driveSubsystem.reachedPosition() || !this.driveSubsystem.reachedHeading()) {
             double[] translation = this.driveSubsystem.gotoPosition();
-            double turn = this.driveSubsystem.reachedPosition()? this.driveSubsystem.gotoHeading(true) : this.driveSubsystem.gotoHeading(false);
+            double turn = this.driveSubsystem.gotoHeading();
             this.driveSubsystem.setMotion(translation[0], translation[1], turn);
             this.intakeSubsystem.setPower(-0.7, -0.7, true);
 

@@ -29,7 +29,6 @@ public class DriveSubsystem {
     public static double minDrivePower = 0.35;
     public static double minStrafePower = 0.5;
     public static double minTurnPower = 0.4;
-    public static double minTurnPower2 = 0.1;
     public static double tolerance = 100;
 
     DcMotorEx frontleftmotor;
@@ -112,7 +111,7 @@ public class DriveSubsystem {
     }
 
     // set minPower lower to get rid of wobble
-    public double gotoHeading(boolean minPower) {
+    public double gotoHeading() {
         double currentheading = getHeading();
         double turnerror = targetheading - currentheading;
         if (Math.abs(turnerror) > 180) {
@@ -122,7 +121,7 @@ public class DriveSubsystem {
 
         double turnpower = turnerror * turnGain;
 
-        double adjust = minPower ? minTurnPower / Math.abs(turnpower) : minTurnPower2 / Math.abs(turnpower) ;
+        double adjust = minTurnPower / Math.abs(turnpower);
         if (adjust > 1.0) {
             turnpower *= adjust;
         }
@@ -173,7 +172,7 @@ public class DriveSubsystem {
         if (Math.abs(turn) > 0.1 && !pointAtGoal) {
             setTargetHeading(getHeading()+turnadjust);
         }
-        double turnpower = reachedHeading() ? 0 : gotoHeading(true);
+        double turnpower = reachedHeading() ? 0 : gotoHeading();
 
         setMotion(drivepower,strafepower,turnpower);
     }

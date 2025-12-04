@@ -21,7 +21,7 @@ public class RedAuto extends LinearOpMode{
     public static int strafe2 = 0;
     public static int turn1 = -45;
 
-    public static int drive3 = -30;
+    public static int drive3 = -35;
 
 
     @Override
@@ -48,5 +48,6 @@ public class RedAuto extends LinearOpMode{
         commands.turn(0);
 
         commands.shootball(5);
+        commands.move(0,10);
     }
 }

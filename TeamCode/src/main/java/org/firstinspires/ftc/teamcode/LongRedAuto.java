@@ -14,7 +14,7 @@ public class LongRedAuto extends LinearOpMode{
     IntakeSubsystem intakeSubsystem;
     ShooterSubsystem shooterSubsystem;
 
-    public static int drive1 = 5;
+    public static int drive1 = 15;
     public static int strafe1 = 0;
     public static int turn1 = -17;
 

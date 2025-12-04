@@ -60,28 +60,6 @@ public class IntakeSubsystem {
         }
     }
 
-//    public void moveIntake(int distance){
-//        int currentpos = intakemotor.getCurrentPosition();
-//        int targetpos = currentpos + distance;
-//
-//        intakemotor.setTargetPosition(targetpos);
-//        intakemotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        intakemotor.setPower(intakepower);
-//    }
-//
-//    public boolean reachedIndexPosition() {
-//        return (Math.abs(indexmotor.getTargetPosition()-indexmotor.getCurrentPosition()) <= 3);
-//    }
-//
-//    public void moveIndexer(int distance) {
-//        int currentpos = indexmotor.getCurrentPosition();
-//        int targetpos = currentpos + distance;
-//
-//        indexmotor.setTargetPosition(targetpos);
-//        indexmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        indexmotor.setPower(indexpower);
-//    }
-
     public void setIntakePower(double power){
         intakemotor.setPower(power);
     }

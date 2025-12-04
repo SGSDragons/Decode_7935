@@ -46,20 +46,16 @@ public class Teleop extends LinearOpMode{
             // set target heading to goal and disable the joystick
             if (gamepad1.right_bumper) {
                 driveSubsystem.setTargetHeading(-45);
-                turn = driveSubsystem.gotoHeading(true);
-                driveSubsystem.pointAtGoal = true;
+                turn = driveSubsystem.gotoHeading();
             } else if (gamepad1.right_trigger >= 0.2) {
                 driveSubsystem.setTargetHeading(-60);
-                turn = driveSubsystem.gotoHeading(true);
-                driveSubsystem.pointAtGoal = true;
+                turn = driveSubsystem.gotoHeading();
             } else if (gamepad1.left_bumper) {
                 driveSubsystem.setTargetHeading(45);
-                turn = driveSubsystem.gotoHeading(true);
-                driveSubsystem.pointAtGoal = true;
+                turn = driveSubsystem.gotoHeading();
             } else if (gamepad1.left_trigger >= 0.2) {
                 driveSubsystem.setTargetHeading(60);
-                turn = driveSubsystem.gotoHeading(true);
-                driveSubsystem.pointAtGoal = true;
+                turn = driveSubsystem.gotoHeading();
             } else {
                 driveSubsystem.pointAtGoal = false;
             }
@@ -89,9 +85,15 @@ public class Teleop extends LinearOpMode{
             double intakepower = gamepad2.right_bumper ? 0 : gamepad2.left_stick_y;
             double indexpower = gamepad2.left_bumper ? 0 : gamepad2.left_stick_y;
 
-            // make sure the limit switch doesn't stop the indexer right as the ball hits the flywheel
-            if (shooterSubsystem.atTargetVelocity() && shooterSubsystem.targetflywheelspeed != shooterSubsystem.defalt_speed) {
-                intakeSubsystem.setPower(intakepower, -0.8, false);
+            // when a ball is loaded wait for the shooter to get up to speed to shoot
+            // when a ball isn't loaded run the indexer and intake until the limit switch is hit
+            if (shooterSubsystem.shooterisEnabled()) {
+                if (!intakeSubsystem.isLoaded()) {
+                    intakeSubsystem.setIntakePower(-0.9);
+                    intakeSubsystem.setIndexPower(-1.0,true);
+                } else if (shooterSubsystem.atTargetVelocity()) {
+                    intakeSubsystem.runIndexer(shooterSubsystem.atTargetVelocity());
+                }
             } else {
                 intakeSubsystem.setPower(intakepower, indexpower, true);
             }
