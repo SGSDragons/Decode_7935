@@ -2,9 +2,12 @@ package org.firstinspires.ftc.teamcode;
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.RaceAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -33,15 +36,26 @@ public class RoadRunnerDemo extends LinearOpMode {
         State state = State.LOADING;
         int shotsFired = 0;
 
+        int loadedTests = 0;
+        int unloadedTests = 0;
+
         private State deduceCurrentState() {
             if (state == State.FIRING && !intake.isLoaded()) {
+                unloadedTests += 1;
+                if (unloadedTests < 10) {
+                    // Don't change states until we're pretty sure the limit switch
+                    // is staying up.
+                    return state;
+                }
                 // It was firing, but the ball isn't there anymore
                 shotsFired += 1;
+
                 if (shotsFired == 3) {
                     // All shots have fired
                     return State.FINISHED;
                 } else {
                     // More shots to fire. Go back to loading with a new time limit
+                    loadedTests = 0;
                     timer.reset();
                     return State.LOADING;
                 }
@@ -54,7 +68,11 @@ public class RoadRunnerDemo extends LinearOpMode {
 
             if (state == State.LOADING && intake.isLoaded()) {
                 // Change from LOADING to FIRING because a ball is in position
-                return State.FIRING;
+                loadedTests += 1;
+                if (loadedTests > 10) {
+                    unloadedTests = 0;
+                    return State.FIRING;
+                }
             }
 
             // No important changes happened, so stay in the current state
@@ -62,10 +80,12 @@ public class RoadRunnerDemo extends LinearOpMode {
         }
 
         @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+        public boolean run(@NonNull TelemetryPacket p) {
             if (timer == null) {
                 timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
             }
+            p.put("Shots Fired", shotsFired);
+            intake.updateTelemetry(p);
 
             state = deduceCurrentState();
 
@@ -88,7 +108,7 @@ public class RoadRunnerDemo extends LinearOpMode {
         }
     }
 
-    Action runIntake = (p) -> {intake.runIntake(); return false; };
+    Action runIntake = (p) -> {intake.runIntake(); return true; };
     Action stopIntake = (p) -> {intake.stopIntake(); return false; };
 
     @Override
@@ -117,9 +137,13 @@ public class RoadRunnerDemo extends LinearOpMode {
         // Move to the first row of balls and grab them
         autoMode = autoMode
                 .splineToLinearHeading(firstBallRow, 0)
-                .stopAndAdd(runIntake)
-                .setTangent(Math.PI/2)
-                .lineToYConstantHeading(60.0, new TranslationalVelConstraint(15))
+                .stopAndAdd(new RaceAction(
+                        runIntake,
+                        drive.actionBuilder(firstBallRow)
+                                .setTangent(Math.PI/2)
+                                .lineToYConstantHeading(60.0, new TranslationalVelConstraint(15))
+                                .build()
+                ))
                 .stopAndAdd(stopIntake);
 
         // Return to the shooting position and shoot again.
@@ -134,8 +158,14 @@ public class RoadRunnerDemo extends LinearOpMode {
                 .turnTo(Math.toRadians(-30))
                 .splineToLinearHeading(new Pose2d(14, 25, 0), 0)
                 .turnTo(Math.PI/2)
-                .stopAndAdd(runIntake)
-                .lineToYConstantHeading(60.0, new TranslationalVelConstraint(15))
+
+                .stopAndAdd(new RaceAction(
+                        runIntake,
+                        drive.actionBuilder(firstBallRow)
+                                .setTangent(Math.PI/2)
+                                .lineToYConstantHeading(60.0, new TranslationalVelConstraint(15))
+                                .build()
+                ))
                 .stopAndAdd(stopIntake);
 
         // Return to the shooting position and shoot again

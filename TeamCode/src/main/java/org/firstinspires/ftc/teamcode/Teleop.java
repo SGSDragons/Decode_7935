@@ -20,8 +20,8 @@ public class Teleop extends LinearOpMode{
     ShooterSubsystem shooterSubsystem;
     DcMotor shooter;
 
-    public static double minpos = 0.68;
-    public static double maxpos = 1;
+    public static double closealign = 45;
+    public static double faralign = 52;
     public static boolean runwheel = true;
 
     @Override
@@ -45,16 +45,16 @@ public class Teleop extends LinearOpMode{
 
             // set target heading to goal and disable the joystick
             if (gamepad1.right_bumper) {
-                driveSubsystem.setTargetHeading(-45);
+                driveSubsystem.setTargetHeading(-closealign);
                 turn = driveSubsystem.gotoHeading();
             } else if (gamepad1.right_trigger >= 0.2) {
-                driveSubsystem.setTargetHeading(-60);
+                driveSubsystem.setTargetHeading(-faralign);
                 turn = driveSubsystem.gotoHeading();
             } else if (gamepad1.left_bumper) {
-                driveSubsystem.setTargetHeading(45);
+                driveSubsystem.setTargetHeading(closealign);
                 turn = driveSubsystem.gotoHeading();
             } else if (gamepad1.left_trigger >= 0.2) {
-                driveSubsystem.setTargetHeading(60);
+                driveSubsystem.setTargetHeading(faralign);
                 turn = driveSubsystem.gotoHeading();
             } else {
                 driveSubsystem.pointAtGoal = false;

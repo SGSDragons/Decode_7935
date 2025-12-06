@@ -78,11 +78,20 @@ public class IntakeSubsystem {
         setIndexPower(indexpower, enableLimit);
     }
 
-    public void updateTelemetry() {
-        TelemetryPacket telemetry = new TelemetryPacket();
+    public void updateTelemetry(TelemetryPacket telemetry) {
         telemetry.put("Intake Motor Velocity", intakemotor.getVelocity());
         telemetry.put("Index Motor Velocity", indexmotor.getVelocity());
-        telemetry.put("Limit Switch", limit.getState());
+
+        if (limit.getState()) {
+            telemetry.put("Limit Switch", 1);
+        } else {
+            telemetry.put("Limit Switch", 0);
+        }
+    }
+
+    public void updateTelemetry() {
+        TelemetryPacket telemetry = new TelemetryPacket();
+        updateTelemetry(telemetry);
         FtcDashboard.getInstance().sendTelemetryPacket(telemetry);
     }
 }
