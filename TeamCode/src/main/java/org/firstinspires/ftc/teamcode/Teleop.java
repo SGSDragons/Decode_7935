@@ -21,7 +21,7 @@ public class Teleop extends LinearOpMode{
     DcMotor shooter;
 
     public static double closealign = 45;
-    public static double faralign = 52;
+    public static double faralign = 55;
     public static boolean runwheel = true;
 
     @Override
@@ -91,7 +91,7 @@ public class Teleop extends LinearOpMode{
                 if (!intakeSubsystem.isLoaded()) {
                     intakeSubsystem.setIntakePower(-0.9);
                     intakeSubsystem.setIndexPower(-1.0,true);
-                } else if (shooterSubsystem.atTargetVelocity()) {
+                } else {
                     intakeSubsystem.runIndexer(shooterSubsystem.atTargetVelocity());
                 }
             } else {
