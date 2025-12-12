@@ -14,7 +14,7 @@ public class ShooterSubsystem {
     public double defalt_speed = 900;
     public static double speed_needed1 = 1450;
     public static double speed_needed2 = 1550;
-    public static double speed_needed3 = 1700;
+    public static double speed_needed3 = 1625;
     public double targetflywheelspeed = speed_needed2;
 
     public static double tolorance = 50;
