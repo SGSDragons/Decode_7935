@@ -52,7 +52,7 @@ public class IntakeSubsystem {
     public void runIndexer(boolean flywheelReady) {
         // Running the indexer means we're shooting. Don't waste energy on the
         // intake motor and feed as fast as possible if the flywheel is ready.
-        intakemotor.setPower(0.0);
+        intakemotor.setPower(-0.4);
         if (flywheelReady) {
             indexmotor.setPower(-1.0);
         } else {
