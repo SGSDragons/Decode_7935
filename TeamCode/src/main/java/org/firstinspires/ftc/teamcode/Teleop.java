@@ -89,7 +89,7 @@ public class Teleop extends LinearOpMode{
             // when a ball isn't loaded run the indexer and intake until the limit switch is hit
             if (shooterSubsystem.shooterisEnabled()) {
                 if (!intakeSubsystem.isLoaded()) {
-                    intakeSubsystem.setIntakePower(-0.9);
+                    intakeSubsystem.setIntakePower(-intakeSubsystem.feedspeed);
                     intakeSubsystem.setIndexPower(-1.0,true);
                 } else {
                     intakeSubsystem.runIndexer(shooterSubsystem.atTargetVelocity());

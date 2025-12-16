@@ -12,7 +12,7 @@ public class ShooterSubsystem {
 
     public static int feedSpeed = 700;
     public double defalt_speed = 900;
-    public static double speed_needed1 = 1450;
+    public static double speed_needed1 = 1200;
     public static double speed_needed2 = 1550;
     public static double speed_needed3 = 1625;
     public double targetflywheelspeed = speed_needed2;
@@ -21,7 +21,7 @@ public class ShooterSubsystem {
     public static double kp = 50;
     public static double ki = 0;
     public static double kd = 0;
-    public static double kf = 15;
+    public static double kf = 20;
 
     // Motors
     DcMotorEx flywheel;

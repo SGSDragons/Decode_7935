@@ -33,8 +33,8 @@ public class RedAuto extends LinearOpMode {
         IntakeSubsystem intake = new IntakeSubsystem(hardwareMap);
         ShooterSubsystem shooter = new ShooterSubsystem(hardwareMap);
         DriveSubsystem driving = new DriveSubsystem(hardwareMap);
-        AutoCommands commands = new AutoCommands(driving,intake,shooter);
 
+        AutoCommands commands = new AutoCommands(driving,intake,shooter);
         Action turnToGoal = (p) -> {commands.turn(turnoffset); return !driving.reachedHeading(); };
 
         waitForStart();

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -8,11 +9,14 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+@Config
 public class IntakeSubsystem {
 
     DcMotorEx intakemotor;
     DcMotorEx indexmotor;
     DigitalChannel limit;
+
+    public static double feedspeed = 0.5;
 
 //    public static double indexpower = 0.7;
 //    public static double intakepower = 0.7;
@@ -38,7 +42,7 @@ public class IntakeSubsystem {
         // the indexer wheel to make room, but only if the limit switch isn't down
         intakemotor.setPower(-1.0);
         if (!isLoaded()) {
-            indexmotor.setPower(-0.5);
+            indexmotor.setPower(-feedspeed);
         } else {
             indexmotor.setPower(0.0);
         }
@@ -52,7 +56,7 @@ public class IntakeSubsystem {
     public void runIndexer(boolean flywheelReady) {
         // Running the indexer means we're shooting. Don't waste energy on the
         // intake motor and feed as fast as possible if the flywheel is ready.
-        intakemotor.setPower(-0.4);
+        intakemotor.setPower(-0.6);
         if (flywheelReady) {
             indexmotor.setPower(-1.0);
         } else {
