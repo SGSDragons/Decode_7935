@@ -57,9 +57,9 @@ public class DriveSubsystem {
         backrightmotor = hardwareMap.get(DcMotorEx.class, "backright");
         imu = hardwareMap.get(IMU.class,"imu");
 
-        leftwheel = hardwareMap.get(DcMotorEx.class, "leftwheel");
-        rightwheel = hardwareMap.get(DcMotorEx.class, "indexer");
-        strafewheel = hardwareMap.get(DcMotorEx.class, "intake");
+        leftwheel = hardwareMap.get(DcMotorEx.class, "frontright");
+        rightwheel = hardwareMap.get(DcMotorEx.class, "backleft");
+        strafewheel = hardwareMap.get(DcMotorEx.class, "frontleft");
 
         frontleftmotor.setDirection(DcMotor.Direction.FORWARD);
         frontrightmotor.setDirection(DcMotor.Direction.FORWARD);

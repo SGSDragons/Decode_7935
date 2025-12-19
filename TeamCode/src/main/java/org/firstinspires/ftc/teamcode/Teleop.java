@@ -20,9 +20,11 @@ public class Teleop extends LinearOpMode{
     ShooterSubsystem shooterSubsystem;
     DcMotor shooter;
 
+
     public static double closealign = 45;
     public static double faralign = 55;
     public static boolean runwheel = true;
+    public static double indexpowercut = 2;
 
     @Override
     public void runOpMode(){
@@ -82,15 +84,15 @@ public class Teleop extends LinearOpMode{
             }
             shooterSubsystem.enableShooter();
 
-            double intakepower = gamepad2.right_bumper ? 0 : gamepad2.left_stick_y;
-            double indexpower = gamepad2.left_bumper ? 0 : gamepad2.left_stick_y;
+            double intakepower = gamepad2.right_bumper ? 0 : -gamepad2.left_stick_y;
+            double indexpower = gamepad2.left_bumper ? 0 : -gamepad2.left_stick_y/indexpowercut;
 
             // when a ball is loaded wait for the shooter to get up to speed to shoot
             // when a ball isn't loaded run the indexer and intake until the limit switch is hit
             if (shooterSubsystem.shooterisEnabled()) {
                 if (!intakeSubsystem.isLoaded()) {
-                    intakeSubsystem.setIntakePower(-intakeSubsystem.feedspeed);
-                    intakeSubsystem.setIndexPower(-1.0,true);
+                    intakeSubsystem.setIntakePower(0.9);
+                    intakeSubsystem.setIndexPower(1.0,true);
                 } else {
                     intakeSubsystem.runIndexer(shooterSubsystem.atTargetVelocity());
                 }

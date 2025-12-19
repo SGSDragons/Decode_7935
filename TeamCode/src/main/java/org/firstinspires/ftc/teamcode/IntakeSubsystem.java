@@ -17,15 +17,14 @@ public class IntakeSubsystem {
     DigitalChannel limit;
 
     public static double feedspeed = 0.5;
+    public static double intakespeed = 0.6;
 
-//    public static double indexpower = 0.7;
-//    public static double intakepower = 0.7;
 
     public IntakeSubsystem(HardwareMap hardwareMap){
         intakemotor = hardwareMap.get(DcMotorEx.class,"intake");
         indexmotor = hardwareMap.get(DcMotorEx.class,"indexer");
 
-        intakemotor.setDirection(DcMotor.Direction.FORWARD);
+        intakemotor.setDirection(DcMotor.Direction.REVERSE);
         indexmotor.setDirection(DcMotor.Direction.FORWARD);
 
         limit = hardwareMap.get(DigitalChannel.class, "limit");
@@ -40,9 +39,9 @@ public class IntakeSubsystem {
     public void runIntake() {
         // Running the intake means grabbing balls from the floor and running
         // the indexer wheel to make room, but only if the limit switch isn't down
-        intakemotor.setPower(-1.0);
+        intakemotor.setPower(1.0);
         if (!isLoaded()) {
-            indexmotor.setPower(-feedspeed);
+            indexmotor.setPower(0.3);
         } else {
             indexmotor.setPower(0.0);
         }
@@ -56,9 +55,9 @@ public class IntakeSubsystem {
     public void runIndexer(boolean flywheelReady) {
         // Running the indexer means we're shooting. Don't waste energy on the
         // intake motor and feed as fast as possible if the flywheel is ready.
-        intakemotor.setPower(-0.6);
+        intakemotor.setPower(intakespeed);
         if (flywheelReady) {
-            indexmotor.setPower(-1.0);
+            indexmotor.setPower(feedspeed);
         } else {
             indexmotor.setPower(0.0);
         }

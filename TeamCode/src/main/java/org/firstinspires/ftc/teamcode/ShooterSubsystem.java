@@ -5,34 +5,40 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 @Config
 public class ShooterSubsystem {
 
     public static int feedSpeed = 700;
-    public double defalt_speed = 900;
-    public static double speed_needed1 = 1200;
+//    public double defalt_speed = 900;
+    public double defalt_speed = 0;
+    public static double speed_needed1 = 1100;
     public static double speed_needed2 = 1550;
     public static double speed_needed3 = 1625;
     public double targetflywheelspeed = speed_needed2;
 
     public static double tolorance = 50;
-    public static double kp = 50;
+    public static double kp = 200;
     public static double ki = 0;
-    public static double kd = 0;
+    public static double kd = 20;
     public static double kf = 20;
 
     // Motors
-    DcMotorEx flywheel;
+    DcMotorEx leftflywheel;
+    DcMotorEx rightflywheel;
     DcMotorEx indexer;
     DcMotorEx intake;
 
 
     public ShooterSubsystem(HardwareMap hardwareMap) {
         // Assign motors from hardware map
-        flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
-        flywheel.setDirection(DcMotor.Direction.REVERSE);
+        leftflywheel = hardwareMap.get(DcMotorEx.class, "leftflywheel");
+        leftflywheel.setDirection(DcMotor.Direction.REVERSE);
+
+        rightflywheel = hardwareMap.get(DcMotorEx.class, "rightflywheel");
+        rightflywheel.setDirection(DcMotor.Direction.REVERSE);
 
         indexer = hardwareMap.get(DcMotorEx.class, "indexer");
         intake = hardwareMap.get(DcMotorEx.class, "intake");
@@ -48,9 +54,12 @@ public class ShooterSubsystem {
         }
     }
     public void enableShooter() {
-        // Don't run index motors if the wheel is set to its default speed
-        flywheel.setVelocityPIDFCoefficients(kp,ki,kd,kf);
-        flywheel.setVelocity(targetflywheelspeed);
+        // set both motors to the same pidf coeficcients and set the same targetvelocity;
+        leftflywheel.setVelocityPIDFCoefficients(kp,ki,kd,kf);
+        rightflywheel.setVelocityPIDFCoefficients(kp,ki,kd,kf);
+
+        leftflywheel.setVelocity(targetflywheelspeed);
+        rightflywheel.setVelocity(targetflywheelspeed);
     }
 
     public void disableShooter () {
@@ -61,7 +70,7 @@ public class ShooterSubsystem {
     }
 
     public boolean atTargetVelocity() {
-        return (Math.abs(flywheel.getVelocity() - targetflywheelspeed) < tolorance && targetflywheelspeed != defalt_speed);
+        return (Math.abs(leftflywheel.getVelocity() - targetflywheelspeed) < tolorance && targetflywheelspeed != defalt_speed);
     }
 
     public boolean shooterisEnabled() {
@@ -69,12 +78,13 @@ public class ShooterSubsystem {
     }
 
     public void runShooter(double power) {
-        flywheel.setPower(power);
+        leftflywheel.setPower(power);
+        rightflywheel.setPower(power);
     }
 
     public void updateTelemetry() {
         TelemetryPacket telemetry = new TelemetryPacket();
-        telemetry.put("flywheel velocity", flywheel.getVelocity());
+        telemetry.put("flywheel velocity", leftflywheel.getVelocity());
         telemetry.put("target velicity" , targetflywheelspeed);
         FtcDashboard.getInstance().sendTelemetryPacket(telemetry);
     }
