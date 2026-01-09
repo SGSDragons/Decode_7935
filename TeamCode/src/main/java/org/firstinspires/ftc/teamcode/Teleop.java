@@ -43,7 +43,7 @@ public class Teleop extends LinearOpMode{
 
             double drive = -gamepad1.left_stick_y;
             double strafe = gamepad1.left_stick_x;
-            double turn = gamepad1.right_stick_x;
+            double turn = Math.pow(gamepad1.right_stick_x,3);
 
             // set target heading to goal and disable the joystick
             if (gamepad1.right_bumper) {

@@ -41,20 +41,24 @@ public final class ThreeDeadWheelLocalizer implements Localizer {
     private int lastPar0Pos, lastPar1Pos, lastPerpPos;
     private boolean initialized;
     private Pose2d pose;
+    double initialHeading;
 
     public ThreeDeadWheelLocalizer(HardwareMap hardwareMap, double inPerTick, Pose2d initialPose) {
         // TODO: make sure these names match the config motor names for the ports containing
         // the dead wheel encoders!
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
-        par0 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "leftwheel")));
-        par1 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "indexer")));
-        perp = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "intake")));
+        par0 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "frontright")));
+        par1 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "backleft")));
+        perp = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "frontleft")));
         imu = hardwareMap.get(IMU.class,"imu");
+
+        initialHeading = initialPose.heading.toDouble();
+        imu.resetYaw();
 
         // TODO: reverse encoder directions if needed
         //   par0.setDirection(DcMotorSimple.Direction.REVERSE);
         par0.setDirection(DcMotorSimple.Direction.REVERSE);
-        par1.setDirection(DcMotorSimple.Direction.REVERSE);
+//        par1.setDirection(DcMotorSimple.Direction.REVERSE);
         perp.setDirection(DcMotorSimple.Direction.REVERSE);
 
         this.inPerTick = inPerTick;
@@ -65,13 +69,16 @@ public final class ThreeDeadWheelLocalizer implements Localizer {
 
     @Override
     public void setPose(Pose2d pose) {
-
         this.pose = pose;
     }
 
     @Override
     public Pose2d getPose() {
         return pose;
+    }
+
+    public double getIMUHeading() {
+        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS)+initialHeading;
     }
 
     @Override
@@ -108,6 +115,7 @@ public final class ThreeDeadWheelLocalizer implements Localizer {
                                 (PARAMS.perpXTicks / (PARAMS.par0YTicks - PARAMS.par1YTicks) * (par1PosVel.velocity - par0PosVel.velocity) + perpPosVel.velocity),
                         }).times(inPerTick)
                 ),
+
                 new DualNum<>(new double[] {
                         (par0PosDelta - par1PosDelta) / (PARAMS.par0YTicks - PARAMS.par1YTicks),
                         (par0PosVel.velocity - par1PosVel.velocity) / (PARAMS.par0YTicks - PARAMS.par1YTicks),
@@ -129,6 +137,7 @@ public final class ThreeDeadWheelLocalizer implements Localizer {
 
         pose = pose.plus(twist.value());
 //        pose = new Pose2d(pose.position, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+        pose = new Pose2d(pose.position, getIMUHeading());
 
         return twist.velocity().value();
     }

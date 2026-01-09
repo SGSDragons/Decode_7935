@@ -50,7 +50,7 @@ public class RedAuto extends LinearOpMode {
         Actions.runBlocking(drive.actionBuilder(init)
                 .setReversed(true)
                 .splineToLinearHeading(firingPoint, Math.toRadians(135)) // Tangent points backwards along the route
-                .stopAndAdd(turnToGoal)
+//                .stopAndAdd(turnToGoal)
                 .stopAndAdd(mechanisms.new ShootThree())
                 .splineToLinearHeading(firstBallRow, 0)
                 .build());
@@ -71,7 +71,7 @@ public class RedAuto extends LinearOpMode {
                 .stopAndAdd(mechanisms.stopIntake)
                 .setReversed(true)
                 .splineToLinearHeading(firingPoint, Math.toRadians(200))
-                .stopAndAdd(turnToGoal)
+//                .stopAndAdd(turnToGoal)
                 .stopAndAdd(mechanisms.new ShootThree())
                 .build());
 
@@ -99,7 +99,7 @@ public class RedAuto extends LinearOpMode {
                 .setReversed(true)
                 .lineToYConstantHeading(45.0, new TranslationalVelConstraint(15))
                 .splineToLinearHeading(firingPoint, Math.PI)
-                .stopAndAdd(turnToGoal)
+//                .stopAndAdd(turnToGoal)
                 .stopAndAdd(mechanisms.new ShootThree())
                 .build());
 

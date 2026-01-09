@@ -14,105 +14,97 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
 
-@Autonomous(name = "LongBlueAuto")
+@Autonomous(name = "LongRedAuto")
 @Config
 public class LongRedAuto extends LinearOpMode {
 
     public static int xfiring = 58;
-    public static int yfiring = -6;   // 🔵 flipped for blue
-    public static double turnoffset = 0;
+    public static int yfiring = 12;
+    public static double turnoffset = -32;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        // 🔵 Blue Alliance Mirror Start Pose
-        Pose2d init = new Pose2d(60, -6, Math.toRadians(180));
-
+        Pose2d init = new Pose2d(64.0, 12.0, Math.toRadians(180));
         final MecanumDrive drive = new MecanumDrive(hardwareMap, init);
         AutoShootIntake mechanisms = new AutoShootIntake(hardwareMap);
 
         IntakeSubsystem intake = new IntakeSubsystem(hardwareMap);
         ShooterSubsystem shooter = new ShooterSubsystem(hardwareMap);
         DriveSubsystem driving = new DriveSubsystem(hardwareMap);
-        AutoCommands commands = new AutoCommands(driving,intake,shooter);
 
+        AutoCommands commands = new AutoCommands(driving,intake,shooter);
         Action turnToGoal = (p) -> {commands.turn(turnoffset); return !driving.reachedHeading(); };
 
         waitForStart();
-        mechanisms.shooter.setTargetSpeed(1);
+        mechanisms.shooter.setTargetSpeed(2);
         mechanisms.shooter.enableShooter();
         driving.resetYaw();
 
-        // 🔵 MIRRORED TARGET POSES
-        Pose2d firingPoint = new Pose2d(xfiring, yfiring, Math.toRadians(-135));
-        Pose2d firstBallRow = new Pose2d(-9, -25, Math.toRadians(-90));
-        Pose2d secondBallRow = new Pose2d(14, -25, Math.toRadians(-90));
+        Pose2d firingPoint = new Pose2d(xfiring, yfiring, Math.toRadians(0));
+        Pose2d firstBallRow = new Pose2d(36, 25, Math.toRadians(90));
+        Pose2d secondBallRow = new Pose2d(12, 25, Math.toRadians(90));
 
-        // FIRST SHOT
+        // Backup and take the first shot
         Actions.runBlocking(drive.actionBuilder(init)
                 .setReversed(true)
-                .splineToLinearHeading(firingPoint, Math.toRadians(-135))
+                .splineToLinearHeading(firingPoint, Math.toRadians(0)) // Tangent points backwards along the route
                 .stopAndAdd(turnToGoal)
                 .stopAndAdd(mechanisms.new ShootThree())
                 .splineToLinearHeading(firstBallRow, 0)
-                .build()
-        );
+                .build());
 
-        // INTAKE FIRST ROW
+        // Move to the first row of balls and grab them
         Actions.runBlocking(
                 new RaceAction(
                         mechanisms.runIntake,
                         drive.actionBuilder(drive.localizer.getPose())
-                                .setTangent(-Math.PI/2)
-                                .turnTo(Math.toRadians(-90))     // 🔵 mirrored
-                                .lineToYConstantHeading(-60.0, new TranslationalVelConstraint(15))
+                                .setTangent(Math.PI/2)
+                                .turnTo(Math.PI/2)
+                                .lineToYConstantHeading(60.0, new TranslationalVelConstraint(15))
                                 .build()
-                )
-        );
+                ));
 
-        // RETURN + SHOOT AGAIN
+        // Return to the shooting position and shoot again.
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
                 .stopAndAdd(mechanisms.stopIntake)
                 .setReversed(true)
-                .splineToLinearHeading(firingPoint, Math.toRadians(-160))
+                .splineToLinearHeading(firingPoint, Math.toRadians(200))
                 .stopAndAdd(turnToGoal)
                 .stopAndAdd(mechanisms.new ShootThree())
-                .build()
-        );
+                .build());
 
-        // SECOND BALL ROW
+        // Move to the second row of balls and grab them
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .turnTo(Math.toRadians(30))           // 🔵 mirrored
+                        .turnTo(Math.toRadians(-30))
                         .splineToLinearHeading(secondBallRow, 0)
-                        .turnTo(Math.toRadians(-90))
-                        .build()
-        );
+                        .turnTo(Math.PI/2)
+                        .build());
 
-        // INTAKE PASS #2
         Actions.runBlocking(new RaceAction(
                 mechanisms.runIntake,
                 drive.actionBuilder(drive.localizer.getPose())
-                        .setTangent(-Math.PI/2)
-                        .turnTo(Math.toRadians(-90))
-                        .lineToYConstantHeading(-60.0, new TranslationalVelConstraint(15))
+                        .setTangent(Math.PI/2)
+                        .turnTo(Math.PI/2)
+                        .lineToYConstantHeading(60.0, new TranslationalVelConstraint(15))
                         .build()
         ));
 
-        // FINAL RETURN + SHOOT
+        // Return to the shooting position and shoot again
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
                         .stopAndAdd(mechanisms.stopIntake)
                         .setReversed(true)
-                        .lineToYConstantHeading(-45.0, new TranslationalVelConstraint(15))
+                        .lineToYConstantHeading(45.0, new TranslationalVelConstraint(15))
                         .splineToLinearHeading(firingPoint, Math.PI)
                         .stopAndAdd(turnToGoal)
                         .stopAndAdd(mechanisms.new ShootThree())
-                        .build()
-        );
+                        .build());
 
         while(opModeIsActive()) {
-
+            // Stall for assessment
         }
     }
 }

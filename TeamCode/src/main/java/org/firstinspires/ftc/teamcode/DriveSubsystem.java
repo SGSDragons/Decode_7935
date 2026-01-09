@@ -61,9 +61,9 @@ public class DriveSubsystem {
         rightwheel = hardwareMap.get(DcMotorEx.class, "backleft");
         strafewheel = hardwareMap.get(DcMotorEx.class, "frontleft");
 
-        frontleftmotor.setDirection(DcMotor.Direction.FORWARD);
-        frontrightmotor.setDirection(DcMotor.Direction.FORWARD);
-        backleftmotor.setDirection(DcMotor.Direction.FORWARD);
+        frontleftmotor.setDirection(DcMotor.Direction.REVERSE);
+        frontrightmotor.setDirection(DcMotor.Direction.REVERSE);
+        backleftmotor.setDirection(DcMotor.Direction.REVERSE);
         backrightmotor.setDirection(DcMotor.Direction.REVERSE);
 
         frontleftmotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

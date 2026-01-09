@@ -1,38 +1,110 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.RaceAction;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
+import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
 
 @Autonomous(name = "LongBlueAuto")
 @Config
-public class LongBlueAuto extends LinearOpMode{
+public class LongBlueAuto extends LinearOpMode {
 
-    ElapsedTime runtime = new ElapsedTime();
-    DriveSubsystem driveSubsystem;
-    IntakeSubsystem intakeSubsystem;
-    ShooterSubsystem shooterSubsystem;
-
-    public static int drive1 = 15;
-    public static int strafe1 = 0;
-    public static int turn1 = 17;
+    public static int xfiring = 58;
+    public static int yfiring = 12;
+    public static double turnoffset = -32;
 
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
+
+        Pose2d init = new Pose2d(64.0, 12.0, Math.toRadians(180));
+        final MecanumDrive drive = new MecanumDrive(hardwareMap, init);
+        AutoShootIntake mechanisms = new AutoShootIntake(hardwareMap);
+
+        IntakeSubsystem intake = new IntakeSubsystem(hardwareMap);
+        ShooterSubsystem shooter = new ShooterSubsystem(hardwareMap);
+        DriveSubsystem driving = new DriveSubsystem(hardwareMap);
+
+        AutoCommands commands = new AutoCommands(driving,intake,shooter);
+        Action turnToGoal = (p) -> {commands.turn(turnoffset); return !driving.reachedHeading(); };
 
         waitForStart();
-        runtime.reset();
+        mechanisms.shooter.setTargetSpeed(2);
+//        mechanisms.shooter.enableShooter();
+        driving.resetYaw();
 
-        intakeSubsystem = new IntakeSubsystem(hardwareMap);
-        shooterSubsystem = new ShooterSubsystem(hardwareMap);
-        driveSubsystem = new DriveSubsystem(hardwareMap);
-        driveSubsystem.resetYaw();
+        Pose2d firingPoint = new Pose2d(xfiring, yfiring, Math.toRadians(0));
+        Pose2d firstBallRow = new Pose2d(36, 25, Math.toRadians(90));
+        Pose2d secondBallRow = new Pose2d(12, 25, Math.toRadians(90));
 
-        AutoCommands commands = new AutoCommands(driveSubsystem, intakeSubsystem, shooterSubsystem);
+        // Backup and take the first shot
+        Actions.runBlocking(drive.actionBuilder(init)
+                .setReversed(true)
+                .splineToLinearHeading(firingPoint, Math.toRadians(0)) // Tangent points backwards along the route
+                .stopAndAdd(turnToGoal)
+                .stopAndAdd(mechanisms.new ShootThree())
+                .splineToLinearHeading(firstBallRow, 0)
+                .build());
+//
+//        // Move to the first row of balls and grab them
+//        Actions.runBlocking(
+//                new RaceAction(
+//                        mechanisms.runIntake,
+//                        drive.actionBuilder(drive.localizer.getPose())
+//                                .setTangent(Math.PI/2)
+//                                .turnTo(Math.PI/2)
+//                                .lineToYConstantHeading(60.0, new TranslationalVelConstraint(15))
+//                                .build()
+//                ));
+//
+//        // Return to the shooting position and shoot again.
+//        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
+//                .stopAndAdd(mechanisms.stopIntake)
+//                .setReversed(true)
+//                .splineToLinearHeading(firingPoint, Math.toRadians(200))
+//                .stopAndAdd(turnToGoal)
+//                .stopAndAdd(mechanisms.new ShootThree())
+//                .build());
+//
+//        // Move to the second row of balls and grab them
+//        Actions.runBlocking(
+//                drive.actionBuilder(drive.localizer.getPose())
+//                        .turnTo(Math.toRadians(-30))
+//                        .splineToLinearHeading(secondBallRow, 0)
+//                        .turnTo(Math.PI/2)
+//                        .build());
+//
+//        Actions.runBlocking(new RaceAction(
+//                mechanisms.runIntake,
+//                drive.actionBuilder(drive.localizer.getPose())
+//                        .setTangent(Math.PI/2)
+//                        .turnTo(Math.PI/2)
+//                        .lineToYConstantHeading(60.0, new TranslationalVelConstraint(15))
+//                        .build()
+//        ));
+//
+//        // Return to the shooting position and shoot again
+//        Actions.runBlocking(
+//                drive.actionBuilder(drive.localizer.getPose())
+//                        .stopAndAdd(mechanisms.stopIntake)
+//                        .setReversed(true)
+//                        .lineToYConstantHeading(45.0, new TranslationalVelConstraint(15))
+//                        .splineToLinearHeading(firingPoint, Math.PI)
+//                        .stopAndAdd(turnToGoal)
+//                        .stopAndAdd(mechanisms.new ShootThree())
+//                        .build());
 
-        commands.shootball(3);
-        commands.move(drive1,strafe1);
+        while(opModeIsActive()) {
+            // Stall for assessment
+        }
     }
 }

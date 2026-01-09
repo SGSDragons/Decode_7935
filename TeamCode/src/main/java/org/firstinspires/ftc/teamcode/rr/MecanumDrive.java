@@ -72,9 +72,12 @@ public final class MecanumDrive {
         public double backCompensation = 0.97;
 
         // feedforward parameters (in tick units)
-        public double kS = 2.45;
-        public double kV = 2.02e-4;
-        public double kA = 2.4e-4;
+//        public double kS = 2.45;
+//        public double kV = 2.02e-4;
+//        public double kA = 2.4e-4;
+        public double kS = 1.57;
+        public double kV = 2.65e-4;
+        public double kA = 0.0001;
 
         // path profile parameters (in inches)
         public double maxWheelVel = 40;
@@ -86,9 +89,9 @@ public final class MecanumDrive {
         public double maxAngAccel = Math.PI;
 
         // path controller gains
-        public double axialGain = 5.0;
-        public double lateralGain = 12.0;
-        public double headingGain = 2.2; // shared with turn
+        public double axialGain = 6.0;
+        public double lateralGain = 7.0;
+        public double headingGain = 7.0; // shared with turn
 
         public double axialVelGain = 0.2;
         public double lateralVelGain = 0.15;
@@ -146,7 +149,10 @@ public final class MecanumDrive {
 
         // TODO: reverse motor directions if needed
         // CB: I don't know why this is the only one
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // TODO: make sure your config has an IMU with this name (can be BNO or BHI)
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
