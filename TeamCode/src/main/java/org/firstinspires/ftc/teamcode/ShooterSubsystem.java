@@ -12,8 +12,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class ShooterSubsystem {
 
     public static int feedSpeed = 700;
-//    public double defalt_speed = 900;
-    public double defalt_speed = 0;
+    public double defalt_speed = 900;
     public static double speed_needed1 = 1100;
     public static double speed_needed2 = 1400;
     public static double speed_needed3 = 1400;

@@ -93,7 +93,7 @@ public final class MecanumDrive {
         public double lateralGain = 7.0;
         public double headingGain = 7.0; // shared with turn
 
-        public double axialVelGain = 0.2;
+        public double axialVelGain = 0;
         public double lateralVelGain = 0.15;
         public double headingVelGain = 0.2; // shared with turn
     }

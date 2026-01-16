@@ -18,8 +18,8 @@ import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
 @Config
 public class RedAuto extends LinearOpMode {
 
-    public static int xfiring = -20;
-    public static int yfiring = 19;
+    public static int xfiring = -18;
+    public static int yfiring = 17;
     public static double turnoffset = 0;
 
 
@@ -43,14 +43,13 @@ public class RedAuto extends LinearOpMode {
         driving.resetYaw();
 
         Pose2d firingPoint = new Pose2d(xfiring, yfiring, Math.toRadians(135));
-        Pose2d firstBallRow = new Pose2d(-9, 25, Math.toRadians(90));
-        Pose2d secondBallRow = new Pose2d(14, 25, Math.toRadians(90));
+        Pose2d firstBallRow = new Pose2d(-12, 25, Math.toRadians(90));
+        Pose2d secondBallRow = new Pose2d(12, 25, Math.toRadians(90));
 
         // Backup and take the first shot
         Actions.runBlocking(drive.actionBuilder(init)
                 .setReversed(true)
                 .splineToLinearHeading(firingPoint, Math.toRadians(135)) // Tangent points backwards along the route
-//                .stopAndAdd(turnToGoal)
                 .stopAndAdd(mechanisms.new ShootThree())
                 .splineToLinearHeading(firstBallRow, 0)
                 .build());
@@ -71,7 +70,6 @@ public class RedAuto extends LinearOpMode {
                 .stopAndAdd(mechanisms.stopIntake)
                 .setReversed(true)
                 .splineToLinearHeading(firingPoint, Math.toRadians(200))
-//                .stopAndAdd(turnToGoal)
                 .stopAndAdd(mechanisms.new ShootThree())
                 .build());
 
@@ -79,7 +77,8 @@ public class RedAuto extends LinearOpMode {
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
                 .turnTo(Math.toRadians(-30))
-                .splineToLinearHeading(secondBallRow, 0)
+//                .splineToLinearHeading(secondBallRow, 0)
+                .splineToConstantHeading(secondBallRow.component1(),0)
                 .turnTo(Math.PI/2)
                 .build());
 
@@ -92,16 +91,23 @@ public class RedAuto extends LinearOpMode {
                                 .build()
                 ));
 
-        // Return to the shooting position and shoot again
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
                 .stopAndAdd(mechanisms.stopIntake)
                 .setReversed(true)
                 .lineToYConstantHeading(45.0, new TranslationalVelConstraint(15))
-                .splineToLinearHeading(firingPoint, Math.PI)
-//                .stopAndAdd(turnToGoal)
-                .stopAndAdd(mechanisms.new ShootThree())
                 .build());
+
+        // Return to the shooting position and shoot again
+//        Actions.runBlocking(
+//                drive.actionBuilder(drive.localizer.getPose())
+//                .stopAndAdd(mechanisms.stopIntake)
+//                .setReversed(true)
+//                .lineToYConstantHeading(45.0, new TranslationalVelConstraint(15))
+//                .splineToLinearHeading(firingPoint, Math.PI)
+//                .turnTo(Math.toRadians(-135))
+//                .stopAndAdd(mechanisms.new ShootThree())
+//                .build());
 
         while(opModeIsActive()) {
             // Stall for assessment

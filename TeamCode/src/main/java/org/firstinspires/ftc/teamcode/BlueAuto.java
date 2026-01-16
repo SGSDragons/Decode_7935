@@ -18,8 +18,8 @@ import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
 @Config
 public class BlueAuto extends LinearOpMode {
 
-    public static int xfiring = -20;
-    public static int yfiring = -19;   // 🔵 flipped for blue
+    public static int xfiring = -18;
+    public static int yfiring = -17;   // 🔵 flipped for blue
     public static double turnoffset = 0;
 
     @Override
@@ -45,14 +45,13 @@ public class BlueAuto extends LinearOpMode {
 
         // 🔵 MIRRORED TARGET POSES
         Pose2d firingPoint = new Pose2d(xfiring, yfiring, Math.toRadians(-135));
-        Pose2d firstBallRow = new Pose2d(-9, -25, Math.toRadians(-90));
-        Pose2d secondBallRow = new Pose2d(14, -25, Math.toRadians(-90));
+        Pose2d firstBallRow = new Pose2d(-12, -25, Math.toRadians(-90));
+        Pose2d secondBallRow = new Pose2d(12, -25, Math.toRadians(-90));
 
         // FIRST SHOT
         Actions.runBlocking(drive.actionBuilder(init)
                 .setReversed(true)
                 .splineToLinearHeading(firingPoint, Math.toRadians(-135))
-//                .stopAndAdd(turnToGoal)
                 .stopAndAdd(mechanisms.new ShootThree())
                 .splineToLinearHeading(firstBallRow, 0)
                 .build()
@@ -75,7 +74,6 @@ public class BlueAuto extends LinearOpMode {
                 .stopAndAdd(mechanisms.stopIntake)
                 .setReversed(true)
                 .splineToLinearHeading(firingPoint, Math.toRadians(-160))
-//                .stopAndAdd(turnToGoal)
                 .stopAndAdd(mechanisms.new ShootThree())
                 .build()
         );
@@ -84,7 +82,8 @@ public class BlueAuto extends LinearOpMode {
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
                         .turnTo(Math.toRadians(30))           // 🔵 mirrored
-                        .splineToLinearHeading(secondBallRow, 0)
+//                        .splineToLinearHeading(secondBallRow, 0)
+                        .splineToConstantHeading(secondBallRow.component1(),0)
                         .turnTo(Math.toRadians(-90))
                         .build()
         );
@@ -99,17 +98,22 @@ public class BlueAuto extends LinearOpMode {
                         .build()
         ));
 
-        // FINAL RETURN + SHOOT
-        Actions.runBlocking(
+                Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
                         .stopAndAdd(mechanisms.stopIntake)
                         .setReversed(true)
                         .lineToYConstantHeading(-45.0, new TranslationalVelConstraint(15))
-                        .splineToLinearHeading(firingPoint, Math.PI)
-//                        .stopAndAdd(turnToGoal)
-                        .stopAndAdd(mechanisms.new ShootThree())
-                        .build()
-        );
+                        .build());
+
+        // FINAL RETURN + SHOOT
+//        Actions.runBlocking(
+//                drive.actionBuilder(drive.localizer.getPose())
+//                        .stopAndAdd(mechanisms.stopIntake)
+//                        .setReversed(true)
+//                        .lineToYConstantHeading(-45.0, new TranslationalVelConstraint(15))
+//                        .splineToLinearHeading(firingPoint, Math.PI)
+//                        .stopAndAdd(mechanisms.new ShootThree())
+//                        .build());
 
         while(opModeIsActive()) {
 

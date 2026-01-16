@@ -42,15 +42,15 @@ public class LongRedAuto extends LinearOpMode {
         mechanisms.shooter.enableShooter();
         driving.resetYaw();
 
-        Pose2d firingPoint = new Pose2d(xfiring, yfiring, Math.toRadians(0));
+        Pose2d firingPoint = new Pose2d(xfiring, yfiring, Math.toRadians(-32));
         Pose2d firstBallRow = new Pose2d(36, 25, Math.toRadians(90));
         Pose2d secondBallRow = new Pose2d(12, 25, Math.toRadians(90));
 
-        // Backup and take the first shot
+        // Move Forward and take the first shot
         Actions.runBlocking(drive.actionBuilder(init)
                 .setReversed(true)
                 .splineToLinearHeading(firingPoint, Math.toRadians(0)) // Tangent points backwards along the route
-                .stopAndAdd(turnToGoal)
+//                .stopAndAdd(turnToGoal)
                 .stopAndAdd(mechanisms.new ShootThree())
                 .splineToLinearHeading(firstBallRow, 0)
                 .build());
@@ -70,8 +70,8 @@ public class LongRedAuto extends LinearOpMode {
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
                 .stopAndAdd(mechanisms.stopIntake)
                 .setReversed(true)
-                .splineToLinearHeading(firingPoint, Math.toRadians(200))
-                .stopAndAdd(turnToGoal)
+                .splineToLinearHeading(firingPoint, Math.toRadians(180))
+//                .stopAndAdd(turnToGoal)
                 .stopAndAdd(mechanisms.new ShootThree())
                 .build());
 
@@ -80,7 +80,7 @@ public class LongRedAuto extends LinearOpMode {
                 drive.actionBuilder(drive.localizer.getPose())
                         .turnTo(Math.toRadians(-30))
                         .splineToLinearHeading(secondBallRow, 0)
-                        .turnTo(Math.PI/2)
+//                        .turnTo(Math.PI/2)
                         .build());
 
         Actions.runBlocking(new RaceAction(
