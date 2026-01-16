@@ -20,13 +20,14 @@ public class RedAuto extends LinearOpMode {
 
     public static int xfiring = -18;
     public static int yfiring = 17;
+    public static int turnfiring = 135;
     public static double turnoffset = 0;
 
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        Pose2d init = new Pose2d(-52.0, 50.0, Math.toRadians(135));
+        Pose2d init = new Pose2d(-52.0, 50.0, Math.toRadians(turnfiring));
         final MecanumDrive drive = new MecanumDrive(hardwareMap, init);
         AutoShootIntake mechanisms = new AutoShootIntake(hardwareMap);
 
@@ -76,9 +77,8 @@ public class RedAuto extends LinearOpMode {
         // Move to the second row of balls and grab them
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                .turnTo(Math.toRadians(-30))
 //                .splineToLinearHeading(secondBallRow, 0)
-                .splineToConstantHeading(secondBallRow.component1(),0)
+                .splineToConstantHeading(secondBallRow.component1(),Math.PI/2)
                 .turnTo(Math.PI/2)
                 .build());
 
