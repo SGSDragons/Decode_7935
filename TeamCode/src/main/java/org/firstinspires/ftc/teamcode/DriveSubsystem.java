@@ -28,7 +28,7 @@ public class DriveSubsystem {
     public static double turnGain = -0.0075;
     public static double minDrivePower = 0.35;
     public static double minStrafePower = 0.5;
-    public static double minTurnPower = 0.4;
+    public static double minTurnPower = 0.25;
     public static double tolerance = 100;
 
     DcMotorEx frontleftmotor;

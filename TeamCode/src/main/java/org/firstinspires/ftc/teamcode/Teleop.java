@@ -22,7 +22,7 @@ public class Teleop extends LinearOpMode{
 
 
     public static double closealign = 45;
-    public static double faralign = 55;
+    public static double faralign = 63;
     public static boolean runwheel = true;
     public static double indexpowercut = 2;
 
