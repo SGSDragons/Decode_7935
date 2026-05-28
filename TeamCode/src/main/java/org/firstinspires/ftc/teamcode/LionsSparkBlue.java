@@ -47,7 +47,7 @@ public class LionsSparkBlue extends LinearOpMode {
         Actions.runBlocking(drive.actionBuilder(init)
 //                .setReversed(true)
                 .splineToLinearHeading(firingPoint, Math.toRadians(0)) // Tangent points backwards along the route
-                .stopAndAdd(mechanisms.new ShootThree())
+                .stopAndAdd(mechanisms.new ShootThreeFar())
                 .splineToLinearHeading(parkPos, 0)
                 .build());
 

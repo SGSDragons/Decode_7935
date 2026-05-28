@@ -70,8 +70,8 @@ public class Teleop extends LinearOpMode{
                 shooterSubsystem.defalt_speed = runwheel ? 900 : 0;
             }
 
-            driveSubsystem.setMotion(drive, strafe, turn);
-//            driveSubsystem.feildOriented(drive, strafe, turn);
+//            driveSubsystem.setMotion(drive, strafe, turn);
+            driveSubsystem.feildOriented(drive, strafe, turn);
 
             if (gamepad2.a) {
                 shooterSubsystem.setTargetSpeed(1);
@@ -93,8 +93,10 @@ public class Teleop extends LinearOpMode{
                 if (!intakeSubsystem.isLoaded()) {
                     intakeSubsystem.setIntakePower(0.9);
                     intakeSubsystem.setIndexPower(1.0,true);
+                } else if (shooterSubsystem.targetflywheelspeed > 1300){
+                    intakeSubsystem.runIndexerFar(shooterSubsystem.atTargetVelocity());
                 } else {
-                    intakeSubsystem.runIndexer(shooterSubsystem.atTargetVelocity());
+                    intakeSubsystem.runIndexerClose(shooterSubsystem.atTargetVelocity());
                 }
             } else {
                 intakeSubsystem.setPower(intakepower, indexpower, true);

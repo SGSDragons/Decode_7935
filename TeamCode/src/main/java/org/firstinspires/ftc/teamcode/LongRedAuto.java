@@ -51,7 +51,7 @@ public class LongRedAuto extends LinearOpMode {
         Actions.runBlocking(drive.actionBuilder(init)
                 .setReversed(true)
                 .splineToLinearHeading(firingPoint, Math.toRadians(0)) // Tangent points backwards along the route
-                .stopAndAdd(mechanisms.new ShootThree())
+                .stopAndAdd(mechanisms.new ShootThreeFar())
                 .splineToLinearHeading(firstBallRow, 0)
                 .build());
 
@@ -73,7 +73,7 @@ public class LongRedAuto extends LinearOpMode {
                 .lineToYConstantHeading(35.0, new TranslationalVelConstraint(15))
                 .splineToLinearHeading(firingPoint, Math.toRadians(180))
                 .stopAndAdd(turnToGoal)
-                .stopAndAdd(mechanisms.new ShootThree())
+                .stopAndAdd(mechanisms.new ShootThreeFar())
                 .build());
 
         // Move to the second row of balls and grab them

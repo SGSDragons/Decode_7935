@@ -5,7 +5,6 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -16,16 +15,18 @@ public class IntakeSubsystem {
     DcMotorEx indexmotor;
     DigitalChannel limit;
 
-    public static double feedspeed = 0.5;
-    public static double intakespeed = 0.6;
+    public static double feedspeedclose = 1.0;
+    public static double intakespeedclose = 1.0;
+    public static double feedspeedfar = 0.5;
+    public static double intakespeedfar = 0.5;
 
 
     public IntakeSubsystem(HardwareMap hardwareMap){
         intakemotor = hardwareMap.get(DcMotorEx.class,"intake");
         indexmotor = hardwareMap.get(DcMotorEx.class,"indexer");
 
-        intakemotor.setDirection(DcMotor.Direction.REVERSE);
-        indexmotor.setDirection(DcMotor.Direction.FORWARD);
+        intakemotor.setDirection(DcMotor.Direction.FORWARD);
+        indexmotor.setDirection(DcMotor.Direction.REVERSE);
 
         limit = hardwareMap.get(DigitalChannel.class, "limit");
         limit.setMode(DigitalChannel.Mode.INPUT);
@@ -52,12 +53,23 @@ public class IntakeSubsystem {
         indexmotor.setPower(0.0);
     }
 
-    public void runIndexer(boolean flywheelReady) {
+    public void runIndexerClose(boolean flywheelReady) {
         // Running the indexer means we're shooting. Don't waste energy on the
         // intake motor and feed as fast as possible if the flywheel is ready.
-        intakemotor.setPower(intakespeed);
+        intakemotor.setPower(intakespeedclose);
         if (flywheelReady) {
-            indexmotor.setPower(feedspeed);
+            indexmotor.setPower(feedspeedclose);
+        } else {
+            indexmotor.setPower(0.0);
+        }
+    }
+
+    public void runIndexerFar(boolean flywheelReady) {
+        // Running the indexer means we're shooting. Don't waste energy on the
+        // intake motor and feed as fast as possible if the flywheel is ready.
+        intakemotor.setPower(intakespeedfar);
+        if (flywheelReady) {
+            indexmotor.setPower(feedspeedfar);
         } else {
             indexmotor.setPower(0.0);
         }

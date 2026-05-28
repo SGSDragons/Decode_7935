@@ -53,7 +53,7 @@ public class BlueAuto extends LinearOpMode {
         Actions.runBlocking(drive.actionBuilder(init)
                 .setReversed(true)
                 .splineToLinearHeading(firingPoint, Math.toRadians(-135))
-                .stopAndAdd(mechanisms.new ShootThree())
+                .stopAndAdd(mechanisms.new ShootThreeClose())
                 .splineToLinearHeading(firstBallRow, 0)
                 .build()
         );
@@ -75,7 +75,7 @@ public class BlueAuto extends LinearOpMode {
                 .stopAndAdd(mechanisms.stopIntake)
                 .setReversed(true)
                 .splineToLinearHeading(firingPoint, Math.toRadians(-160))
-                .stopAndAdd(mechanisms.new ShootThree())
+                .stopAndAdd(mechanisms.new ShootThreeClose())
                 .build()
         );
 

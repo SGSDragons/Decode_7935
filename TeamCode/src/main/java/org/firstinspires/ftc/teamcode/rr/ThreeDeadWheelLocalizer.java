@@ -47,9 +47,9 @@ public final class ThreeDeadWheelLocalizer implements Localizer {
         // TODO: make sure these names match the config motor names for the ports containing
         // the dead wheel encoders!
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
-        par0 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "frontright")));
-        par1 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "backleft")));
-        perp = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "frontleft")));
+        par0 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "backleft")));
+        par1 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "frontleft")));
+        perp = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "backright")));
         imu = hardwareMap.get(IMU.class,"imu");
 
         initialHeading = initialPose.heading.toDouble();
@@ -58,8 +58,8 @@ public final class ThreeDeadWheelLocalizer implements Localizer {
         // TODO: reverse encoder directions if needed
         //   par0.setDirection(DcMotorSimple.Direction.REVERSE);
         par0.setDirection(DcMotorSimple.Direction.REVERSE);
-//        par1.setDirection(DcMotorSimple.Direction.REVERSE);
-        perp.setDirection(DcMotorSimple.Direction.REVERSE);
+        par1.setDirection(DcMotorSimple.Direction.FORWARD);
+        perp.setDirection(DcMotorSimple.Direction.FORWARD);
 
         this.inPerTick = inPerTick;
         FlightRecorder.write("THREE_DEAD_WHEEL_PARAMS", PARAMS);

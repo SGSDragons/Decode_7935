@@ -8,6 +8,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.Range;
@@ -28,7 +29,7 @@ public class DriveSubsystem {
     public static double turnGain = -0.0075;
     public static double minDrivePower = 0.35;
     public static double minStrafePower = 0.5;
-    public static double minTurnPower = 0.25;
+    public static double minTurnPower = 0.35;
     public static double tolerance = 100;
 
     DcMotorEx frontleftmotor;
@@ -57,14 +58,14 @@ public class DriveSubsystem {
         backrightmotor = hardwareMap.get(DcMotorEx.class, "backright");
         imu = hardwareMap.get(IMU.class,"imu");
 
-        leftwheel = hardwareMap.get(DcMotorEx.class, "frontright");
-        rightwheel = hardwareMap.get(DcMotorEx.class, "backleft");
-        strafewheel = hardwareMap.get(DcMotorEx.class, "frontleft");
+        leftwheel = hardwareMap.get(DcMotorEx.class, "backleft");
+        rightwheel = hardwareMap.get(DcMotorEx.class, "frontleft");
+        strafewheel = hardwareMap.get(DcMotorEx.class, "backright");
 
         frontleftmotor.setDirection(DcMotor.Direction.REVERSE);
-        frontrightmotor.setDirection(DcMotor.Direction.REVERSE);
-        backleftmotor.setDirection(DcMotor.Direction.REVERSE);
-        backrightmotor.setDirection(DcMotor.Direction.REVERSE);
+        frontrightmotor.setDirection(DcMotor.Direction.FORWARD);
+        backleftmotor.setDirection(DcMotor.Direction.FORWARD);
+        backrightmotor.setDirection(DcMotor.Direction.FORWARD);
 
         frontleftmotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontrightmotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -167,12 +168,14 @@ public class DriveSubsystem {
         double drivepower = drive * Math.cos(-currentheading) + strafe * Math.sin(-currentheading);
         double strafepower = -drive * Math.sin(-currentheading) + strafe * Math.cos(-currentheading);
 
-        // disable turnadjust if pointAtGoal is true
-        double turnadjust = Math.pow(-turn,3) * turnsensitivity;
-        if (Math.abs(turn) > 0.1 && !pointAtGoal) {
-            setTargetHeading(getHeading()+turnadjust);
-        }
-        double turnpower = reachedHeading() ? 0 : gotoHeading();
+//        // disable turnadjust if pointAtGoal is true
+//        double turnadjust = -turn * turnsensitivity;
+//        if (Math.abs(turn) > 0.1 && !pointAtGoal) {
+//            setTargetHeading(getHeading()+turnadjust);
+//        }
+//        double turnpower = reachedHeading() ? 0 : gotoHeading();
+
+        double turnpower = turn;
 
         setMotion(drivepower,strafepower,turnpower);
     }
