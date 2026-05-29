@@ -14,20 +14,20 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
 
-@Autonomous(name = "LongRedAuto")
+@Autonomous(name = "LongBlueAuto2")
 @Config
-public class LongRedAuto extends LinearOpMode {
+public class LongBlueAuto2 extends LinearOpMode {
 
     public static int xfiring = 52;
-    public static int yfiring = 12;
-    public static int turnfiring = 157;
-    public static double turnoffset = -23;
+    public static int yfiring = -12;
+    public static int turnfiring = -157;
+    public static double turnoffset = 23;
 
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        Pose2d init = new Pose2d(60.0, 12.0, Math.toRadians(180));
+        Pose2d init = new Pose2d(60.0, -12.0, Math.toRadians(180));
         final MecanumDrive drive = new MecanumDrive(hardwareMap, init);
         AutoShootIntake mechanisms = new AutoShootIntake(hardwareMap);
 
@@ -44,10 +44,11 @@ public class LongRedAuto extends LinearOpMode {
         driving.resetYaw();
 
         Pose2d firingPoint = new Pose2d(xfiring, yfiring, Math.toRadians(turnfiring));
-        Pose2d firstBallRow = new Pose2d(36, 25, Math.toRadians(90));
-        Pose2d secondBallRow = new Pose2d(14, 25, Math.toRadians(90));
+        Pose2d firstBallRow = new Pose2d(36, -25, Math.toRadians(-90));
+        Pose2d humanPlayerZone = new Pose2d(54, -42, Math.toRadians(-90));
+        Pose2d parkPos = new Pose2d(63, -36, Math.toRadians(-90));
 
-        // Move Forward and take the first shot
+        // Backup and take the first shot
         Actions.runBlocking(drive.actionBuilder(init)
                 .setReversed(true)
                 .splineToLinearHeading(firingPoint, Math.toRadians(0)) // Tangent points backwards along the route
@@ -61,8 +62,8 @@ public class LongRedAuto extends LinearOpMode {
                         mechanisms.runIntake,
                         drive.actionBuilder(drive.localizer.getPose())
                                 .setTangent(Math.PI/2)
-                                .turnTo(Math.PI/2)
-                                .lineToYConstantHeading(60.0, new TranslationalVelConstraint(15))
+                                .turnTo(-Math.PI/2)
+                                .lineToYConstantHeading(-60.0, new TranslationalVelConstraint(15))
                                 .build()
                 ));
 
@@ -70,34 +71,56 @@ public class LongRedAuto extends LinearOpMode {
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
                 .stopAndAdd(mechanisms.stopIntake)
                 .setReversed(true)
-                .lineToYConstantHeading(35.0, new TranslationalVelConstraint(15))
+                .lineToYConstantHeading(-35.0, new TranslationalVelConstraint(15))
                 .splineToLinearHeading(firingPoint, Math.toRadians(180))
                 .stopAndAdd(turnToGoal)
                 .stopAndAdd(mechanisms.new ShootThreeFar())
+                .splineToLinearHeading(humanPlayerZone, 0)
                 .build());
 
-        // Move to the second row of balls and grab them
+        // Move to human player zone
         Actions.runBlocking(
-                drive.actionBuilder(drive.localizer.getPose())
-                        .splineToLinearHeading(secondBallRow, 0)
-                        .turnTo(Math.PI/2)
-                        .build());
+                new RaceAction(
+                        mechanisms.runIntake,
+                        drive.actionBuilder(drive.localizer.getPose())
+                                .setTangent(Math.PI/2)
+                                .turnTo(-Math.PI/2)
+                                .lineToYConstantHeading(-60.0, new TranslationalVelConstraint(15))
+                                .build()
+                ));
 
-        Actions.runBlocking(new RaceAction(
-                mechanisms.runIntake,
-                drive.actionBuilder(drive.localizer.getPose())
-                        .setTangent(Math.PI/2)
-                        .turnTo(Math.PI/2)
-                        .lineToYConstantHeading(60.0, new TranslationalVelConstraint(15))
-                        .build()
-        ));
+        // Return to the shooting position and shoot again.
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
+                .stopAndAdd(mechanisms.stopIntake)
+                .setReversed(true)
+                .lineToYConstantHeading(-35.0, new TranslationalVelConstraint(15))
+                .splineToLinearHeading(firingPoint, Math.toRadians(180))
+                .stopAndAdd(turnToGoal)
+                .stopAndAdd(mechanisms.new ShootThreeFar())
+                .splineToLinearHeading(firstBallRow, 0)
+                .build());
 
-                Actions.runBlocking(
-                drive.actionBuilder(drive.localizer.getPose())
-                        .stopAndAdd(mechanisms.stopIntake)
-                        .setReversed(true)
-                        .lineToYConstantHeading(45.0, new TranslationalVelConstraint(15))
-                        .build());
+        // Move to first ball row if balls there
+        Actions.runBlocking(
+                new RaceAction(
+                        mechanisms.runIntake,
+                        drive.actionBuilder(drive.localizer.getPose())
+                                .setTangent(Math.PI/2)
+                                .turnTo(-Math.PI/2)
+                                .lineToYConstantHeading(-60.0, new TranslationalVelConstraint(15))
+                                .build()
+                ));
+
+        // Return to the shooting position and shoot again.
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
+                .stopAndAdd(mechanisms.stopIntake)
+                .setReversed(true)
+                .lineToYConstantHeading(-35.0, new TranslationalVelConstraint(15))
+                .splineToLinearHeading(firingPoint, Math.toRadians(180))
+                .stopAndAdd(turnToGoal)
+                .stopAndAdd(mechanisms.new ShootThreeFar())
+                .splineToLinearHeading(parkPos, 0)
+                .build());
 
         // Return to the shooting position and shoot again
 //        Actions.runBlocking(
@@ -106,6 +129,7 @@ public class LongRedAuto extends LinearOpMode {
 //                        .setReversed(true)
 //                        .lineToYConstantHeading(45.0, new TranslationalVelConstraint(15))
 //                        .splineToLinearHeading(firingPoint, Math.PI)
+//                        .stopAndAdd(turnToGoal)
 //                        .stopAndAdd(mechanisms.new ShootThree())
 //                        .build());
 

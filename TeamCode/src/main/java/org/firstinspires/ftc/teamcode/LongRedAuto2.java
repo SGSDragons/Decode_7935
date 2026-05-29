@@ -14,9 +14,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
 
-@Autonomous(name = "LongRedAuto")
+@Autonomous(name = "LongRedAuto2")
 @Config
-public class LongRedAuto extends LinearOpMode {
+public class LongRedAuto2 extends LinearOpMode {
 
     public static int xfiring = 52;
     public static int yfiring = 12;
@@ -92,7 +92,7 @@ public class LongRedAuto extends LinearOpMode {
                         .build()
         ));
 
-                Actions.runBlocking(
+        Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
                         .stopAndAdd(mechanisms.stopIntake)
                         .setReversed(true)

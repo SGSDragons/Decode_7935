@@ -30,12 +30,11 @@ public class AutoShootIntake{
                 first = false;
             }
 
-            if (timer.time() > 1500.0) {
+            if (timer.time() > 2000.0) {
                 return false;
             }
-
             else {
-                intake.runIndexerClose(shooter.atTargetVelocity());
+                intake.runFeedingClose(shooter.atTargetVelocity());
                 return true;
             }
         }
@@ -43,17 +42,22 @@ public class AutoShootIntake{
 
     public class ShootThreeFar implements Action {
 
-        private ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);;
+        private ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        boolean first = true;
 
         @Override
         public boolean run(@NonNull TelemetryPacket p) {
 
+            if (first) {
+                timer.reset();
+                first = false;
+            }
+
             if (timer.time() > 1500.0) {
                 return false;
             }
-
             else {
-                intake.runIndexerFar(shooter.atTargetVelocity());
+                intake.runFeedingFar(shooter.atTargetVelocity());
                 return true;
             }
         }

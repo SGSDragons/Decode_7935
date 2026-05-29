@@ -3,17 +3,15 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.RaceAction;
-import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
 
-@Autonomous(name = "LionsSparkRed")
+@Autonomous(name = "ShootOneFarRed")
 @Config
-public class LionsSparkRed extends LinearOpMode {
+public class ShootOneFarRed extends LinearOpMode {
 
     public static int xfiring = 52;
     public static int yfiring = 12;
@@ -36,7 +34,7 @@ public class LionsSparkRed extends LinearOpMode {
         Action turnToGoal = (p) -> {commands.turn(turnoffset); return !driving.reachedHeading(); };
 
         waitForStart();
-        mechanisms.shooter.setTargetSpeed(2);
+        mechanisms.shooter.setTargetSpeed(3);
         mechanisms.shooter.enableShooter();
         driving.resetYaw();
 

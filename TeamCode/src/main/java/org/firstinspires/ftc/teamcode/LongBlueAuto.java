@@ -39,7 +39,7 @@ public class LongBlueAuto extends LinearOpMode {
         Action turnToGoal = (p) -> {commands.turn(turnoffset); return !driving.reachedHeading(); };
 
         waitForStart();
-        mechanisms.shooter.setTargetSpeed(2);
+        mechanisms.shooter.setTargetSpeed(3);
         mechanisms.shooter.enableShooter();
         driving.resetYaw();
 

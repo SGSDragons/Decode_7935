@@ -94,9 +94,9 @@ public class Teleop extends LinearOpMode{
                     intakeSubsystem.setIntakePower(0.9);
                     intakeSubsystem.setIndexPower(1.0,true);
                 } else if (shooterSubsystem.targetflywheelspeed > 1300){
-                    intakeSubsystem.runIndexerFar(shooterSubsystem.atTargetVelocity());
+                    intakeSubsystem.runFeedingFar(shooterSubsystem.atTargetVelocity());
                 } else {
-                    intakeSubsystem.runIndexerClose(shooterSubsystem.atTargetVelocity());
+                    intakeSubsystem.runFeedingClose(shooterSubsystem.atTargetVelocity());
                 }
             } else {
                 intakeSubsystem.setPower(intakepower, indexpower, true);

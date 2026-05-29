@@ -100,7 +100,7 @@ public class RoadRunnerDemo extends LinearOpMode {
                     intake.runIntake();
                     return true;
                 case FIRING:
-                    intake.runIndexerClose(shooter.atTargetVelocity());
+                    intake.runFeedingClose(shooter.atTargetVelocity());
                     return true;
                 default:
                     return true;

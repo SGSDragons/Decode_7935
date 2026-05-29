@@ -36,10 +36,10 @@ public class RedAuto extends LinearOpMode {
         DriveSubsystem driving = new DriveSubsystem(hardwareMap);
 
         AutoCommands commands = new AutoCommands(driving,intake,shooter);
-        Action turnToGoal = (p) -> {commands.turn(turnoffset); return !driving.reachedHeading(); };
+//        Action turnToGoal = (p) -> {commands.turn(turnoffset); return !driving.reachedHeading(); };
 
         waitForStart();
-        mechanisms.shooter.setTargetSpeed(1);
+        mechanisms.shooter.setTargetSpeed(2);
         mechanisms.shooter.enableShooter();
         driving.resetYaw();
 
@@ -65,6 +65,17 @@ public class RedAuto extends LinearOpMode {
                                 .lineToYConstantHeading(60.0, new TranslationalVelConstraint(15))
                                 .build()
                 ));
+
+        // Open gate
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
+                .stopAndAdd(mechanisms.stopIntake)
+                .setReversed(true)
+                .lineToYConstantHeading(45.0, new TranslationalVelConstraint(15))
+                .lineToXConstantHeading(-5.0, new TranslationalVelConstraint(15))
+                .setReversed(true)
+                .lineToYConstantHeading(60.0, new TranslationalVelConstraint(15))
+                .build()
+        );
 
         // Return to the shooting position and shoot again.
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
@@ -99,18 +110,14 @@ public class RedAuto extends LinearOpMode {
                 .build());
 
         // Return to the shooting position and shoot again
-//        Actions.runBlocking(
-//                drive.actionBuilder(drive.localizer.getPose())
-//                .stopAndAdd(mechanisms.stopIntake)
-//                .setReversed(true)
-//                .lineToYConstantHeading(45.0, new TranslationalVelConstraint(15))
-//                .splineToLinearHeading(firingPoint, Math.PI)
-//                .turnTo(Math.toRadians(-135))
-//                .stopAndAdd(mechanisms.new ShootThree())
-//                .build());
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
+                .stopAndAdd(mechanisms.stopIntake)
+                .setReversed(true)
+                .lineToYConstantHeading(45.0, new TranslationalVelConstraint(15))
+                .splineToLinearHeading(firingPoint, Math.PI)
+                .stopAndAdd(mechanisms.new ShootThreeClose())
+                .build());
 
-        while(opModeIsActive()) {
-            // Stall for assessment
-        }
+        while(opModeIsActive()) {}
     }
 }
